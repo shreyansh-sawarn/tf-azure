@@ -1,0 +1,18 @@
+formatter: "markdown table"
+
+content: |-
+  # Module Documentation
+
+  ## Usage
+  ```hcl
+  module "example" {
+    source = "../../modules/example"
+    # ...
+  }
+  ```
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
+
+  {{ .Resources }}
