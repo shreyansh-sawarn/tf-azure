@@ -3,11 +3,15 @@ include "root" {
 }
 
 terraform {
-  source = "../../../modules/web"
+  source = "../../../modules/web/function_app"
 }
 
 dependency "resource_group" {
   config_path = "../resource_group"
+}
+
+dependency "app_service_plan" {
+  config_path = "../app_service_plan"
 }
 
 dependency "storage" {
@@ -21,9 +25,8 @@ locals {
 inputs = {
   resource_group_name        = dependency.resource_group.outputs.resource_group_name
   location                   = dependency.resource_group.outputs.location
-  app_service_plan_name      = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-asp"
-  app_service_name           = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-webapp"
   function_app_name          = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-func"
+  service_plan_id            = dependency.app_service_plan.outputs.id
   storage_account_name       = dependency.storage.outputs.storage_account_name
   storage_account_access_key = dependency.storage.outputs.primary_access_key
 }
