@@ -26,12 +26,12 @@ jobs:
       - name: 'Setup Terraform'
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.10.0
+          terraform-version: 1.10.0
 
       - name: 'Setup Terragrunt'
         uses: autero1/action-terragrunt@v3
         with:
-          terragrunt_version: 0.73.0
+          terragrunt-version: 0.73.0
 
       - name: 'Terragrunt Plan (Dev)'
         if: github.event_name == 'pull_request'
