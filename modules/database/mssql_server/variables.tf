@@ -29,6 +29,12 @@ variable "admin_password" {
   }
 }
 
+variable "public_network_access_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether public network access is enabled for the SQL Server"
+}
+
 variable "tags" {
   type        = map(string)
   default     = {}

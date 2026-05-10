@@ -29,6 +29,12 @@ variable "replication_type" {
   description = "Replication type (LRS, GRS, RAGRS, ZRS, GZRS, RAGZRS)"
 }
 
+variable "public_network_access_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether public network access is enabled for the storage account"
+}
+
 variable "containers" {
   type        = list(string)
   default     = []
