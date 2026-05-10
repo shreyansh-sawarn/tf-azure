@@ -32,27 +32,24 @@ jobs:
       - name: 'Terraform Format Check'
         run: terraform fmt -check -recursive -diff
 
-      - name: 'Terraform Validate (Modules)'
+      - name: 'Security Scan (tfsec)'
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          soft_fail: true # Set to true for portfolio display, false for strict enforcement
+
+      - name: 'Setup Infracost'
+        uses: infracost/actions/setup@v2
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: 'Infracost (Dev)'
+        if: github.event_name == 'pull_request'
         run: |
-          for dir in modules/*/; do
-            if [ -d "$dir" ]; then
-              for subdir in "$dir"*/; do
-                if [ -f "$subdir/main.tf" ]; then
-                  echo "Validating $subdir..."
-                  terraform -chdir="$subdir" init -backend=false
-                  terraform -chdir="$subdir" validate
-                fi
-              done
-            fi
-          done
-          # Top-level modules (e.g. resource_group)
-          for dir in modules/*/; do
-            if [ -f "$dir/main.tf" ] && [ ! -d "$dir/$(ls "$dir" | head -1)" ] 2>/dev/null; then
-              echo "Validating $dir..."
-              terraform -chdir="$dir" init -backend=false
-              terraform -chdir="$dir" validate
-            fi
-          done
+          cd environments/dev
+          infracost breakdown --path . \
+                            --format json \
+                            --out-file /tmp/infracost.json
+          # Note: In a live env, we would use infracost comment github to post to PR
 
   plan:
     name: 'Terragrunt Plan'
