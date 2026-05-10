@@ -39,8 +39,10 @@ jobs:
           cd environments/dev
           terragrunt run-all plan --terragrunt-non-interactive
 
-      - name: 'Terragrunt Apply (Dev)'
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          cd environments/dev
-          terragrunt run-all apply --terragrunt-non-interactive
+      # The Apply step is commented out to prevent execution without a configured Azure environment.
+      # In a live environment, this would run on a push to the main branch.
+      # - name: 'Terragrunt Apply (Dev)'
+      #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      #   run: |
+      #     cd environments/dev
+      #     terragrunt run-all apply --terragrunt-non-interactive
