@@ -7,10 +7,10 @@ A comprehensive, modular, and highly available Terraform template repository for
 - **High Availability:** Built-in support for Availability Sets, GRS/ZRS storage, and resilient service plans.
 - **Security First:** Integration with Azure Key Vault, Managed Identities, and Azure Firewall.
 - **Environment Management:** Clear separation between `dev` and `prod` environments.
-- **Automation Ready:** Standardized naming conventions and clean parameterization for CI/CD integration.
+- **Automation Ready:** Standardized naming conventions, clean parameterization, and **Terragrunt** orchestration for DRY, multi-environment deployments.
 
 ## 🏗️ Architecture Overview
-The repository follows a hub-and-spoke inspired modular structure:
+The repository follows a hub-and-spoke inspired modular structure orchestrated by **Terragrunt**:
 - **Networking:** VNET, Subnets, NSGs, and Azure Firewall.
 - **Compute:** Linux VMs with High Availability.
 - **Web Services:** Azure App Service and serverless Function Apps.
@@ -29,8 +29,12 @@ tf-azure/
 │   ├── storage/              # Storage Accounts
 │   ├── integration/          # Service Bus, Logic Apps
 │   └── web/                  # App Service, Function App
-├── environments/             # Environment-specific root modules
+├── environments/             # Environment-specific orchestration
+│   ├── terragrunt.hcl        # Root Terragrunt config (DRY providers/state)
 │   ├── dev/                  # Development environment
+│   │   ├── env.hcl           # Environment-specific variables
+│   │   ├── networking/       # Component-level Terragrunt config
+│   │   └── ...
 │   └── prod/                 # Production environment (template)
 ├── DESIGN.md                 # Project architecture and design goals
 └── TERRAFORM_GUIDE.md        # Usage and deployment instructions
@@ -43,15 +47,15 @@ tf-azure/
    cd tf-azure
    ```
 2. **Configure your environment:**
-   Navigate to `environments/dev` and update `variables.tf` or provide a `terraform.tfvars` file.
-3. **Initialize and Plan:**
+   Update `environments/dev/env.hcl` with your project details.
+3. **Initialize and Plan (All Components):**
    ```bash
-   terraform init
-   terraform plan
+   cd environments/dev
+   terragrunt run-all plan
    ```
 
 ## 📝 Portfolio Note
-This repository uses placeholders for sensitive information (IDs, Secrets) to ensure portability and safe public display. For actual deployments, please substitute these with valid Azure credentials.
+This repository uses **Terragrunt** to showcase advanced IaC orchestration patterns, including remote state management, dependency injection, and DRY configuration management.
 
 ---
 *Developed as a professional showcase of Infrastructure as Code (IaC) best practices on Azure.*
