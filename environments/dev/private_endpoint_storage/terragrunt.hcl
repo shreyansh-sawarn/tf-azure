@@ -18,7 +18,8 @@ dependency "resource_group" {
 dependency "vnet" {
   config_path = "../vnet"
   mock_outputs = {
-    vnet_id = "mock-id"
+    vnet_id    = "mock-id"
+    subnet_ids = { app = "mock-id" }
   }
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
