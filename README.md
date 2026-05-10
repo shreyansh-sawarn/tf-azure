@@ -63,15 +63,17 @@ tf-azure/
 │   ├── container_registry/   # {acr}
 │   ├── security/             # {key_vault}
 │   ├── storage/              # {storage_account}
+│   ├── monitoring/           # {log_analytics}
 │   ├── integration/          # {service_bus, logic_app}
 │   └── web/                  # {app_service_plan, web_app, function_app, app_insights}
 ├── environments/             # Terragrunt Orchestration
 │   ├── terragrunt.hcl        # Root config (DRY providers/state)
 │   ├── dev/                  # Development Environment
 │   └── prod/                 # Production Environment
+├── scripts/                  # Automation Scripts
+│   └── bootstrap-state.sh    # State backend provisioning
 ├── .github/workflows/        # CI/CD (GitHub Actions)
-├── DESIGN.md                 # Design & Architecture
-└── TERRAFORM_GUIDE.md        # Usage Guide
+└── .gitignore                # Terraform/Terragrunt ignores
 ```
 
 ## 🛠️ Getting Started

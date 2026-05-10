@@ -15,7 +15,7 @@ resource "azurerm_subnet" "subnets" {
 }
 
 resource "azurerm_network_security_group" "nsg" {
-  for_each            = var.subnets
+  for_each            = { for k, v in var.subnets : k => v if k != "AzureFirewallSubnet" }
   name                = "nsg-${each.key}"
   location            = var.location
   resource_group_name = var.resource_group_name
