@@ -7,7 +7,7 @@ resource "azurerm_servicebus_namespace" "sb" {
 }
 
 resource "azurerm_servicebus_queue" "queue" {
-  name         = var.queue_name
-  namespace_id = azurerm_servicebus_namespace.sb.id
+  name                 = var.queue_name
+  namespace_id         = azurerm_servicebus_namespace.sb.id
   partitioning_enabled = true
 }
