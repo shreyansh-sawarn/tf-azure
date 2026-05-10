@@ -12,4 +12,8 @@ resource "azurerm_key_vault" "vault" {
   sku_name                    = var.sku_name
 
   tags = var.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

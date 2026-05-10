@@ -7,6 +7,10 @@ resource "azurerm_mssql_server" "server" {
   administrator_login_password = var.admin_password
   minimum_tls_version          = "1.2"
   tags                         = var.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azurerm_mssql_firewall_rule" "allow_azure_services" {
