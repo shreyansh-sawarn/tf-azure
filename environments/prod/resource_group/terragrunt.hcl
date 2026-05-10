@@ -13,4 +13,5 @@ locals {
 inputs = {
   resource_group_name = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-rg"
   location            = local.env_vars.locals.location
+  tags                = local.env_vars.locals.tags
 }

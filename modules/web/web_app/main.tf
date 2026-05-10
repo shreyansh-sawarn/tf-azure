@@ -10,13 +10,3 @@ resource "azurerm_linux_web_app" "webapp" {
 
   tags = var.tags
 }
-
-output "default_hostname" {
-  value = azurerm_linux_web_app.webapp.default_hostname
-}
-
-variable "app_service_name" { type = string }
-variable "location" { type = string }
-variable "resource_group_name" { type = string }
-variable "service_plan_id" { type = string }
-variable "tags" { type = map(string); default = {} }

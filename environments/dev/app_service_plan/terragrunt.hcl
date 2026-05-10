@@ -8,6 +8,11 @@ terraform {
 
 dependency "resource_group" {
   config_path = "../resource_group"
+  mock_outputs = {
+    resource_group_name = "mock-rg"
+    location            = "eastus"
+  }
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
 locals {
@@ -19,4 +24,5 @@ inputs = {
   location              = dependency.resource_group.outputs.location
   app_service_plan_name = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-asp"
   sku_name              = local.env_vars.locals.environment == "prod" ? "P1v2" : "B1"
+  tags                  = local.env_vars.locals.tags
 }

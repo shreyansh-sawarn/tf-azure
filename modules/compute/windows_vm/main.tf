@@ -19,7 +19,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   admin_username      = var.admin_username
   admin_password      = var.admin_password
   availability_set_id = var.availability_set_id
-  
+
   network_interface_ids = [azurerm_network_interface.nic.id]
 
   os_disk {
@@ -35,16 +35,3 @@ resource "azurerm_windows_virtual_machine" "vm" {
   }
   tags = var.tags
 }
-
-output "id" { value = azurerm_windows_virtual_machine.vm.id }
-output "private_ip" { value = azurerm_windows_virtual_machine.vm.private_ip_address }
-
-variable "name" { type = string }
-variable "resource_group_name" { type = string }
-variable "location" { type = string }
-variable "subnet_id" { type = string }
-variable "vm_size" { type = string; default = "Standard_B1s" }
-variable "admin_username" { type = string; default = "azureuser" }
-variable "admin_password" { type = string; sensitive = true }
-variable "availability_set_id" { type = string; default = null }
-variable "tags" { type = map(string); default = {} }

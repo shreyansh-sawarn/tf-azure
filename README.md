@@ -13,12 +13,45 @@ A comprehensive, modular, and highly available Terraform template repository for
 
 ## 🏗️ Architecture Overview
 The repository follows a hub-and-spoke inspired modular structure orchestrated by **Terragrunt**:
-- **Networking:** VNET, Subnets, NSGs, and Azure Firewall.
-- **Compute:** Linux VMs with High Availability.
-- **Web Services:** Azure App Service and serverless Function Apps.
-- **Data:** Azure SQL Database and Geo-Redundant Storage.
-- **Security:** Centralized secret management with Azure Key Vault.
-- **Integration:** Asynchronous messaging with Service Bus and Logic Apps.
+
+```mermaid
+graph TB
+    subgraph "Resource Group"
+        subgraph "Networking"
+            VNET[VNET 10.0.0.0/16]
+            FW[Azure Firewall]
+            VNET --> WebSub[Web Subnet]
+            VNET --> AppSub[App Subnet]
+            VNET --> DbSub[DB Subnet]
+            VNET --> FWSub[Firewall Subnet]
+        end
+        subgraph "Compute"
+            AS[Availability Set]
+            LVM[Linux VM]
+            WVM[Windows VM]
+        end
+        subgraph "Web & Serverless"
+            ASP[App Service Plan]
+            WA[Web App]
+            FA[Function App]
+            AI[App Insights]
+        end
+        subgraph "Data"
+            SQL[MSSQL Server]
+            DB[MSSQL Database]
+            SA[Storage Account]
+        end
+        subgraph "Security & Monitoring"
+            KV[Key Vault]
+            LAW[Log Analytics]
+        end
+        subgraph "Integration"
+            SB[Service Bus]
+            LA[Logic App]
+        end
+    end
+    ACR[Container Registry]
+```
 
 ## 📂 Project Structure
 ```text
@@ -44,7 +77,7 @@ tf-azure/
 ## 🛠️ Getting Started
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/tf-azure.git
+   git clone https://github.com/shreyansh-sawarn/tf-azure.git
    cd tf-azure
    ```
 2. **Configure your environment:**
@@ -56,7 +89,10 @@ tf-azure/
    ```
 
 ## 📝 Portfolio Note
-This repository uses **Terragrunt** to showcase advanced IaC orchestration patterns, including remote state management, dependency injection, and DRY configuration management.
+- **Credential Management:** This repository uses placeholders for sensitive information (IDs, Secrets) to ensure portability and safe public display. In a real production environment, these should be managed via Key Vault or CI/CD secrets.
+- **Advanced Orchestration:** We use **Terragrunt** to showcase advanced IaC orchestration patterns, including remote state management, dependency injection, and DRY configuration management.
 
 ---
 *Developed as a professional showcase of Infrastructure as Code (IaC) best practices on Azure.*
+
+Made with ❤️ by Shreyansh. Drop a ⭐ if you like it.

@@ -8,6 +8,19 @@ terraform {
 
 dependency "resource_group" {
   config_path = "../resource_group"
+  mock_outputs = {
+    resource_group_name = "mock-rg"
+    location            = "eastus"
+  }
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
+}
+
+dependency "log_analytics" {
+  config_path = "../log_analytics"
+  mock_outputs = {
+    id = "mock-id"
+  }
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
 locals {
@@ -19,4 +32,6 @@ inputs = {
   location            = dependency.resource_group.outputs.location
   name                = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-insights"
   application_type    = "web"
+  workspace_id        = dependency.log_analytics.outputs.id
+  tags                = local.env_vars.locals.tags
 }

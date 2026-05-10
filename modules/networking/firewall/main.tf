@@ -22,12 +22,3 @@ resource "azurerm_firewall" "fw" {
 
   tags = var.tags
 }
-
-output "id" { value = azurerm_firewall.fw.id }
-output "private_ip" { value = azurerm_firewall.fw.ip_configuration[0].private_ip_address }
-
-variable "name" { type = string }
-variable "location" { type = string }
-variable "resource_group_name" { type = string }
-variable "subnet_id" { type = string }
-variable "tags" { type = map(string); default = {} }

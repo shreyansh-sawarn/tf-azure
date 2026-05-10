@@ -8,12 +8,3 @@ resource "azurerm_mssql_database" "db" {
   zone_redundant = var.zone_redundant
   tags           = var.tags
 }
-
-output "id" { value = azurerm_mssql_database.db.id }
-
-variable "name" { type = string }
-variable "server_id" { type = string }
-variable "max_size_gb" { type = number; default = 2 }
-variable "sku_name" { type = string; default = "S0" }
-variable "zone_redundant" { type = bool; default = false }
-variable "tags" { type = map(string); default = {} }
