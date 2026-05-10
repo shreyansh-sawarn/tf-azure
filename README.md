@@ -6,6 +6,8 @@ A comprehensive, modular, and highly available Terraform template repository for
 - **Modular Architecture:** Reusable modules for Networking, Compute, Storage, Databases, Security, and Integration.
 - **High Availability:** Built-in support for Availability Sets, GRS/ZRS storage, and resilient service plans.
 - **Security First:** Integration with Azure Key Vault, Managed Identities, and Azure Firewall.
+- **Container Ready:** Provisioning for **Azure Container Registry (ACR)** for modern workloads.
+- **CI/CD Integrated:** Production-ready **GitHub Actions** workflow for automated Terragrunt orchestration.
 - **Environment Management:** Clear separation between `dev` and `prod` environments.
 - **Automation Ready:** Standardized naming conventions, clean parameterization, and **Terragrunt** orchestration for DRY, multi-environment deployments.
 
@@ -21,23 +23,22 @@ The repository follows a hub-and-spoke inspired modular structure orchestrated b
 ## 📂 Project Structure
 ```text
 tf-azure/
-├── modules/                  # Reusable resource modules
-│   ├── networking/           # VNET, Subnets, NSGs, Firewall
-│   ├── compute/              # Virtual Machines, Availability Sets
-│   ├── database/             # Azure SQL
-│   ├── security/             # Key Vault
-│   ├── storage/              # Storage Accounts
-│   ├── integration/          # Service Bus, Logic Apps
-│   └── web/                  # App Service, Function App
-├── environments/             # Environment-specific orchestration
-│   ├── terragrunt.hcl        # Root Terragrunt config (DRY providers/state)
-│   ├── dev/                  # Development environment
-│   │   ├── env.hcl           # Environment-specific variables
-│   │   ├── networking/       # Component-level Terragrunt config
-│   │   └── ...
-│   └── prod/                 # Production environment (template)
-├── DESIGN.md                 # Project architecture and design goals
-└── TERRAFORM_GUIDE.md        # Usage and deployment instructions
+├── modules/                  # Granular Resource Modules
+│   ├── networking/           # {vnet, firewall}
+│   ├── compute/              # {linux_vm, windows_vm, availability_set}
+│   ├── database/             # {mssql_server, mssql_database}
+│   ├── container_registry/   # {acr}
+│   ├── security/             # {key_vault}
+│   ├── storage/              # {storage_account}
+│   ├── integration/          # {service_bus, logic_app}
+│   └── web/                  # {app_service_plan, web_app, function_app, app_insights}
+├── environments/             # Terragrunt Orchestration
+│   ├── terragrunt.hcl        # Root config (DRY providers/state)
+│   ├── dev/                  # Development Environment
+│   └── prod/                 # Production Environment
+├── .github/workflows/        # CI/CD (GitHub Actions)
+├── DESIGN.md                 # Design & Architecture
+└── TERRAFORM_GUIDE.md        # Usage Guide
 ```
 
 ## 🛠️ Getting Started
