@@ -52,7 +52,3 @@ To enhance the "High Availability" and "Enterprise" feel:
 4.  **Phase 4: Integration & Security.** Implement Logic Apps, Service Bus, and Azure Firewall.
 5.  **Phase 5: Documentation & Polish.** Finalize READMEs, diagramming architecture, and cleanup.
 
-## Questions for Confirmation
-1. Does this structure look good to you?
-2. Should we start with the Foundation (Phase 1) - specifically the networking module?
-3. Do you have a preferred naming convention (e.g., `prefix-env-region-resource`)?
