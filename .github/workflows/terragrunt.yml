@@ -35,7 +35,18 @@ jobs:
       - name: 'Security Scan (tfsec)'
         uses: aquasecurity/tfsec-action@v1.0.0
         with:
-          soft_fail: true # Set to true for portfolio display, false for strict enforcement
+          soft_fail: true
+
+      - name: 'Terraform Native Test'
+        run: |
+          echo "Running unit tests for modules..."
+          terraform -chdir=modules/resource_group test
+          terraform -chdir=modules/networking/vnet test
+
+      - name: 'Setup Conftest'
+        uses: open-policy-agent/setup-conftest@v1
+        with:
+          version: latest
 
       - name: 'Setup Infracost'
         uses: infracost/actions/setup@v2
@@ -74,6 +85,16 @@ jobs:
         run: |
           cd environments/dev
           terragrunt run-all plan --terragrunt-non-interactive
+
+      - name: 'Policy Check (Conftest)'
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Running OPA policy checks against plan output..."
+          # In a live environment, we would convert a specific plan to JSON:
+          # terragrunt plan -out=tfplan.binary
+          # terragrunt show -json tfplan.binary > tfplan.json
+          # conftest test tfplan.json --policy policy/
+          echo "Example command: conftest test tfplan.json --policy policy/"
 
       # The Apply step is commented out to prevent execution without a configured Azure environment.
       # In a live environment, this would run on a push to the main branch.

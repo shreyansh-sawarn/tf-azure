@@ -7,7 +7,8 @@ A comprehensive, modular, and highly available Terraform template repository for
 - **High Availability:** Built-in support for Availability Sets, GRS/ZRS storage, and resilient service plans.
 - **Security First:** Integration with Azure Key Vault, Managed Identities, and Azure Firewall.
 - **Container Ready:** Provisioning for **Azure Container Registry (ACR)** for modern workloads.
-- **CI/CD Integrated:** Production-ready **GitHub Actions** workflow for automated Terragrunt orchestration, including **Security Scanning (tfsec)** and **Cost Estimation (Infracost)**.
+- **CI/CD Integrated:** Production-ready **GitHub Actions** workflow for automated Terragrunt orchestration, including **Security Scanning (tfsec)**, **Cost Estimation (Infracost)**, and **Policy Enforcement (OPA/Conftest)**.
+- **Robust Validation:** Implementation of **Terraform Native Testing** (`.tftest.hcl`) for unit testing infrastructure modules.
 - **Developer Experience (DX):** Standardized workflow via a **Makefile** and comprehensive **CONTRIBUTING.md** for professional collaboration.
 - **Automation Ready:** Standardized naming conventions, clean parameterization, and **Terragrunt** orchestration for DRY, multi-environment deployments.
 

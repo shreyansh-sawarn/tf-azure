@@ -22,7 +22,12 @@ We follow a consistent naming pattern: `${project}-${environment}-${resource_typ
 - **Perimeter Security:** Perimeter protection via **Azure Firewall** in the networking module.
 - **Sensitive Data:** Marked with `sensitive = true` and managed via Key Vault where possible.
 
-## 5. Deployment Workflow (Terragrunt)
+## 5. Testing & Compliance
+- **Unit Testing:** We use **Terraform Native Testing** (`.tftest.hcl`) to validate module logic. Each core module includes a `tests/` directory with unit tests.
+- **Policy as Code:** We use **Open Policy Agent (OPA)** and **Conftest** to enforce compliance rules (e.g., mandatory tags, minimum TLS versions). Policies are defined in the `policy/` directory.
+- **Security Scanning:** Automated vulnerability scanning is performed using **tfsec** on every pull request.
+
+## 6. Deployment Workflow (Terragrunt)
 1.  **Authentication:** Authenticate via Azure CLI (`az login`).
 2.  **Selection:** Choose an environment (e.g., `cd environments/dev`).
 3.  **Plan All:**

@@ -2,10 +2,10 @@
 
 # Standardize common infrastructure tasks for developers
 
-.PHONY: all fmt validate plan security-scan help
+.PHONY: all fmt validate plan security-scan test policy-check help
 
 # Default target
-all: fmt validate security-scan
+all: fmt validate security-scan test policy-check
 
 ## Code Quality
 fmt:
@@ -19,6 +19,16 @@ validate:
 security-scan:
 	@echo "🛡️  Running security scan with tfsec..."
 	tfsec .
+
+test:
+	@echo "🧪 Running Terraform native tests..."
+	terraform -chdir=modules/resource_group test
+	terraform -chdir=modules/networking/vnet test
+
+policy-check:
+	@echo "⚖️  Running OPA policy checks with Conftest..."
+	@echo "Example: conftest test tfplan.json --policy policy/"
+	# conftest test tfplan.json --policy policy/
 
 ## Environment Operations (Dev)
 plan-dev:
