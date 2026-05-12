@@ -44,7 +44,7 @@ We follow a consistent naming pattern: `${project}-${environment}-${resource_typ
     terragrunt plan
     ```
 
-## 6. Cleanup
+## 7. Cleanup
 To avoid unnecessary costs, use the `run-all` command:
 ```bash
 terragrunt run-all destroy
