@@ -4,10 +4,10 @@ run "validate_linux_vm_config" {
   command = plan
 
   variables {
-    name                = "test-vm"
-    resource_group_name = "test-rg"
-    location            = "eastus"
-    vm_size             = "Standard_DS1_v2"
+    name                 = "test-vm"
+    resource_group_name  = "test-rg"
+    location             = "eastus"
+    vm_size              = "Standard_DS1_v2"
     admin_username       = "adminuser"
     admin_ssh_key_public = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC8z9... test@example.com"
     subnet_id            = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/test-subnet"
