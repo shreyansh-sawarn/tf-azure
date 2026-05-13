@@ -35,6 +35,12 @@ variable "purge_protection_enabled" {
   description = "Whether to enable purge protection"
 }
 
+variable "public_network_access_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether public network access is enabled for the Key Vault"
+}
+
 variable "tags" {
   type        = map(string)
   default     = {}

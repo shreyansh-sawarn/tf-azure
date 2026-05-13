@@ -37,11 +37,14 @@ variable "admin_username" {
 variable "admin_password" {
   type        = string
   sensitive   = true
-  description = "The Password which should be used for the local-administrator on this Virtual Machine"
-  validation {
-    condition     = length(var.admin_password) >= 12
-    error_message = "The admin_password must be at least 12 characters long."
-  }
+  default     = null
+  description = "The Password which should be used for the local-administrator on this Virtual Machine. Required if disable_password_authentication is false."
+}
+
+variable "admin_ssh_key_public" {
+  type        = string
+  default     = null
+  description = "The public SSH key for the local administrator. Required if disable_password_authentication is true."
 }
 
 variable "availability_set_id" {
