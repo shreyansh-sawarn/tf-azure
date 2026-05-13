@@ -1,6 +1,4 @@
-mock_provider "azurerm" {
-  source = "hashicorp/azurerm"
-}
+mock_provider "azurerm" {}
 
 run "validate_vnet_and_subnets" {
   command = plan
