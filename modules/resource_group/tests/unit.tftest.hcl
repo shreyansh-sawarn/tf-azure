@@ -1,3 +1,7 @@
+provider "azurerm" {
+  features {}
+}
+
 run "validate_rg_name" {
   command = plan
 

@@ -1,3 +1,8 @@
+# Provider configuration for tests
+provider "azurerm" {
+  features {}
+}
+
 run "validate_vnet_and_subnets" {
   command = plan
 

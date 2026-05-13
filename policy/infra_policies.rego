@@ -34,13 +34,37 @@ deny[msg] {
     msg := sprintf("SQL Server %v must use TLS 1.2 or higher", [resource.address])
 }
 
-# 3. Deny if public network access is enabled in production (example logic)
-# This is a bit complex as it depends on knowing the environment from context
-# For now, let's just show a general check
+# 3. Deny if public network access is enabled
 deny[msg] {
     resource := input.resource_changes[_]
-    resource.type == "azurerm_mssql_server"
+    resource.mode == "managed"
+    resource.type == "azurerm_storage_account"
     resource.change.after.public_network_access_enabled == true
-    # You could add logic here to only check for PROD
-    msg := sprintf("SQL Server %v has public network access enabled. Use private endpoints instead.", [resource.address])
+    msg := sprintf("Storage Account %v has public network access enabled. Use private endpoints instead.", [resource.address])
+}
+
+deny[msg] {
+    resource := input.resource_changes[_]
+    resource.mode == "managed"
+    resource.type == "azurerm_key_vault"
+    resource.change.after.public_network_access_enabled == true
+    msg := sprintf("Key Vault %v has public network access enabled. Use private endpoints instead.", [resource.address])
+}
+
+# 4. Deny Storage Container public access
+deny[msg] {
+    resource := input.resource_changes[_]
+    resource.mode == "managed"
+    resource.type == "azurerm_storage_container"
+    resource.change.after.container_access_type != "private"
+    msg := sprintf("Storage Container %v must have access type 'private'", [resource.address])
+}
+
+# 5. Deny Key Vault soft delete disabled (though it is now enabled by default in Azure)
+deny[msg] {
+    resource := input.resource_changes[_]
+    resource.mode == "managed"
+    resource.type == "azurerm_key_vault"
+    resource.change.after.soft_delete_retention_days < 7
+    msg := sprintf("Key Vault %v must have soft delete retention of at least 7 days", [resource.address])
 }
