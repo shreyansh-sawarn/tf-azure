@@ -39,9 +39,15 @@ jobs:
 
       - name: 'Terraform Native Test'
         run: |
-          echo "Running unit tests for modules..."
-          terraform -chdir=modules/resource_group test
-          terraform -chdir=modules/networking/vnet test
+          echo "Finding and running unit tests for modules..."
+          find modules -name "*.tftest.hcl" -exec dirname {} \; | sort -u | while read test_dir; do
+            module_dir=$(dirname "$test_dir")
+            echo "---------------------------------------------------"
+            echo "Testing module in $module_dir"
+            echo "---------------------------------------------------"
+            terraform -chdir="$module_dir" init -backend=false
+            terraform -chdir="$module_dir" test
+          done
 
       - name: 'Setup Conftest'
         uses: princespaghetti/setup-conftest@v1
