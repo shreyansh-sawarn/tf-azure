@@ -14,7 +14,7 @@ module "mssql_database" {
   source = "../../../modules/database/mssql_database"
 
   name      = var.sql_db_name
-  server_id = module.mssql_server.server_id
+  server_id = module.mssql_server.id
   sku_name  = var.sql_db_sku
   tags      = var.tags
 }
@@ -33,9 +33,13 @@ module "storage_account" {
 }
 
 output "sql_server_id" {
-  value = module.mssql_server.server_id
+  value = module.mssql_server.id
 }
 
 output "storage_account_id" {
-  value = module.storage_account.storage_account_id
+  value = module.storage_account.id
+}
+
+output "storage_account_name" {
+  value = module.storage_account.name
 }

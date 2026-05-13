@@ -13,3 +13,5 @@ variable "storage_account_name" { type = string }
 variable "storage_account_access_key" { type = string; sensitive = true }
 
 variable "app_insights_name" { type = string }
+
+variable "log_analytics_id" { type = string }

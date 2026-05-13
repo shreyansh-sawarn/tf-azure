@@ -22,8 +22,12 @@ security-scan:
 
 test:
 	@echo "🧪 Running Terraform native tests..."
-	terraform -chdir=modules/resource_group test
-	terraform -chdir=modules/networking/vnet test
+	@find modules -name "*.tftest.hcl" -exec dirname {} \; | sort -u | while read test_dir; do \
+		module_dir=$$(dirname "$$test_dir"); \
+		echo "Testing $$module_dir..."; \
+		terraform -chdir="$$module_dir" init -backend=false > /dev/null 2>&1; \
+		terraform -chdir="$$module_dir" test; \
+	done
 
 policy-check:
 	@echo "⚖️  Running OPA policy checks with Conftest..."

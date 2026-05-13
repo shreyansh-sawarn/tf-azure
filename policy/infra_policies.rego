@@ -1,7 +1,5 @@
 package main
 
-import data.terraform.library
-
 # 1. Deny if standard tags are missing
 deny[msg] {
     resource := input.resource_changes[_]

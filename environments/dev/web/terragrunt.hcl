@@ -21,6 +21,13 @@ dependency "data" {
   }
 }
 
+dependency "integration" {
+  config_path = "../integration"
+  mock_outputs = {
+    log_analytics_id = "mock-id"
+  }
+}
+
 locals {
   env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 }
@@ -37,4 +44,5 @@ inputs = {
 
   storage_account_name       = dependency.data.outputs.storage_account_name
   storage_account_access_key = "placeholder-for-portfolio-demo"
+  log_analytics_id           = dependency.integration.outputs.log_analytics_id
 }

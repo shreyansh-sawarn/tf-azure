@@ -1,18 +1,18 @@
 module "app_service_plan" {
   source = "../../../modules/web/app_service_plan"
 
-  name                = var.app_service_plan_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  os_type             = var.asp_os_type
-  sku_name            = var.asp_sku_name
-  tags                = var.tags
+  app_service_plan_name = var.app_service_plan_name
+  location              = var.location
+  resource_group_name   = var.resource_group_name
+  os_type               = var.asp_os_type
+  sku_name              = var.asp_sku_name
+  tags                  = var.tags
 }
 
 module "web_app" {
   source = "../../../modules/web/web_app"
 
-  name                = var.web_app_name
+  app_service_name    = var.web_app_name
   location            = var.location
   resource_group_name = var.resource_group_name
   service_plan_id     = module.app_service_plan.id
@@ -22,13 +22,13 @@ module "web_app" {
 module "function_app" {
   source = "../../../modules/web/function_app"
 
-  name                = var.function_app_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  service_plan_id     = module.app_service_plan.id
-  storage_account_name = var.storage_account_name
+  function_app_name          = var.function_app_name
+  location                   = var.location
+  resource_group_name        = var.resource_group_name
+  service_plan_id            = module.app_service_plan.id
+  storage_account_name       = var.storage_account_name
   storage_account_access_key = var.storage_account_access_key
-  tags                = var.tags
+  tags                       = var.tags
 }
 
 module "app_insights" {
@@ -38,6 +38,7 @@ module "app_insights" {
   location            = var.location
   resource_group_name = var.resource_group_name
   application_type    = "web"
+  workspace_id        = var.log_analytics_id
   tags                = var.tags
 }
 
