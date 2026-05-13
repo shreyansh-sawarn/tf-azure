@@ -1,5 +1,6 @@
 provider "azurerm" {
   features {}
+  skip_provider_registration = true
 }
 
 run "validate_storage_account_config" {

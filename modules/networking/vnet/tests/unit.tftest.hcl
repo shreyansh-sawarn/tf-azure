@@ -1,6 +1,7 @@
 # Provider configuration for tests
 provider "azurerm" {
   features {}
+  skip_provider_registration = true
 }
 
 run "validate_vnet_and_subnets" {
