@@ -8,7 +8,7 @@ run "validate_vnet_and_subnets" {
     location            = "eastus"
     vnet_name           = "test-vnet"
     address_space       = ["10.1.0.0/16"]
-    subnets             = {test-subnet = { address_prefixes = ["10.1.1.0/24"] }}
+    subnets             = { test-subnet = { address_prefixes = ["10.1.1.0/24"] } }
   }
 
   assert {
