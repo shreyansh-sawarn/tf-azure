@@ -1,10 +1,5 @@
-provider "azurerm" {
-  features {}
-  resource_provider_registrations = "none"
-  subscription_id                 = "00000000-0000-0000-0000-000000000000"
-  tenant_id                       = "00000000-0000-0000-0000-000000000000"
-  client_id                       = "00000000-0000-0000-0000-000000000000"
-  client_secret                   = "dummy-secret"
+mock_provider "azurerm" {
+  source = "hashicorp/azurerm"
 }
 
 run "validate_rg_name" {
@@ -15,6 +10,7 @@ run "validate_rg_name" {
     location            = "eastus"
     tags = {
       Environment = "test"
+      Project     = "portfolio"
     }
   }
 
