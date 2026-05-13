@@ -44,7 +44,7 @@ jobs:
           terraform -chdir=modules/networking/vnet test
 
       - name: 'Setup Conftest'
-        uses: open-policy-agent/setup-conftest@v1
+        uses: princespaghetti/setup-conftest@v1
         with:
           version: latest
 
