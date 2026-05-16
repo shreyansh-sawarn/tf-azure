@@ -7,7 +7,7 @@ run "validate_web_app_config" {
     app_service_name    = "test-app"
     location            = "eastus"
     resource_group_name = "test-rg"
-    service_plan_id     = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Web/serverfarms/test-asp"
+    service_plan_id     = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Web/serverFarms/test-asp"
 
     tags = {
       Environment = "test"
