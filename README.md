@@ -68,8 +68,19 @@ tf-azure/
 │   ├── dev/                  # Cost-optimized Development environment
 │   └── prod/                 # High-performance, HA Production environment
 ├── policy/                   # OPA/Rego Infrastructure Policies
+├── docs/                     # Comprehensive Architectural Documentation
 └── .github/workflows/        # CI/CD (Lint, Test, Policy, Scan)
 ```
+
+## 📖 Detailed Documentation
+
+To make this project as reviewer-friendly as possible, I've created specialized guides for different architectural and operational pillars:
+
+- **🔐 [State Management Strategy](./docs/state-management.md)**: Deep dive into remote state, locking, and disaster recovery.
+- **💰 [Cloud Cost Estimation](./docs/cost-estimation.md)**: How we use Infracost to shift-left cost visibility.
+- **🔄 [GitOps & Workflow](./docs/gitops-workflow.md)**: Details on the PR lifecycle and environment promotion.
+- **🛠️ [Troubleshooting Guide](./docs/troubleshooting.md)**: Solutions for common IaC operational issues.
+- **❓ [Frequently Asked Questions](./docs/faq.md)**: Rationale behind tool choices and architectural patterns.
 
 ## 🌍 Environment Differentiation
 
