@@ -17,12 +17,12 @@ run "validate_app_insights_config" {
   }
 
   assert {
-    condition     = azurerm_application_insights.ai.name == "test-ai"
+    condition     = azurerm_application_insights.insights.name == "test-ai"
     error_message = "App Insights name did not match"
   }
 
   assert {
-    condition     = azurerm_application_insights.ai.application_type == "web"
+    condition     = azurerm_application_insights.insights.application_type == "web"
     error_message = "Application type did not match"
   }
 }

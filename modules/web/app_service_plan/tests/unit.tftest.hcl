@@ -17,12 +17,12 @@ run "validate_app_service_plan_config" {
   }
 
   assert {
-    condition     = azurerm_service_plan.asp.name == "test-asp"
+    condition     = azurerm_service_plan.plan.name == "test-asp"
     error_message = "App Service Plan name did not match"
   }
 
   assert {
-    condition     = azurerm_service_plan.asp.sku_name == "P2v2"
+    condition     = azurerm_service_plan.plan.sku_name == "P2v2"
     error_message = "SKU name did not match"
   }
 }
