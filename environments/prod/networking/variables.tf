@@ -20,7 +20,10 @@ variable "address_space" {
 }
 
 variable "subnets" {
-  type        = map(object({ address_prefixes = list(string) }))
+  type = map(object({
+    address_prefixes  = list(string)
+    service_endpoints = optional(list(string), [])
+  }))
   description = "Map of subnets to create"
 }
 
@@ -75,4 +78,10 @@ variable "waf_enabled" {
 variable "waf_mode" {
   type    = string
   default = "Prevention"
+}
+
+variable "ddos_protection_plan_id" {
+  type        = string
+  default     = null
+  description = "ID of an existing DDoS Protection Plan. Set to null to disable."
 }
