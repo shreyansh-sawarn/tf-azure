@@ -8,6 +8,7 @@ run "validate_service_bus_config" {
     location            = "eastus"
     resource_group_name = "test-rg"
     sku                 = "Standard"
+    queue_name          = "test-queue"
 
     tags = {
       Environment = "test"
