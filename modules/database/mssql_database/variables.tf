@@ -30,6 +30,18 @@ variable "zone_redundant" {
   description = "Whether to enable zone redundancy"
 }
 
+variable "storage_account_type" {
+  type        = string
+  default     = "Local"
+  description = "The storage account type used to store backups for this database. Possible values are Geo, Local and Zone."
+}
+
+variable "short_term_retention_days" {
+  type        = number
+  default     = 7
+  description = "Point-in-time restore configuration. Days has to be between 7 and 35."
+}
+
 variable "tags" {
   type        = map(string)
   default     = {}

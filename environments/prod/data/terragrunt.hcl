@@ -32,6 +32,8 @@ inputs = {
   storage_replication  = "GRS"
   storage_containers   = ["backups", "logs", "prod-data"]
   
-  sql_db_sku           = "S0"
-  sql_zone_redundant   = true
+  sql_db_sku                = "S0"
+  sql_zone_redundant        = true
+  sql_backup_storage_type   = "Geo"
+  sql_backup_retention_days = 35
 }

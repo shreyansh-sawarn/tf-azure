@@ -38,6 +38,7 @@ inputs = {
   tags                = local.env_vars.locals.tags
 
   key_vault_name = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-kv"
+  recovery_vault_name = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-rsv"
   
   storage_account_id = dependency.data.outputs.storage_account_id
   log_analytics_id   = dependency.integration.outputs.log_analytics_id

@@ -23,10 +23,21 @@ module "diag_keyvault" {
 
   name               = "diag-keyvault"
   target_resource_id = module.key_vault.id
-  workspace_id       = var.log_analytics_id
+  log_analytics_workspace_id = var.log_analytics_id
+}
+
+module "recovery_vault" {
+  source = "../../../modules/security/recovery_services_vault"
+
+  name                = var.recovery_vault_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  storage_mode_type   = "GeoRedundant"
+  tags                = var.tags
 }
 
 output "key_vault_id" {
+
   value = module.key_vault.id
 }
 

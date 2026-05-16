@@ -9,6 +9,8 @@ variable "sql_admin_username" { type = string }
 variable "sql_admin_password" { type = string }
 variable "sql_db_sku" { type = string; default = "Basic" }
 variable "sql_zone_redundant" { type = bool; default = false }
+variable "sql_backup_storage_type" { type = string; default = "Local" }
+variable "sql_backup_retention_days" { type = number; default = 7 }
 variable "sql_public_network_access" { type = bool; default = false }
 
 # Storage

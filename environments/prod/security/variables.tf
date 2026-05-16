@@ -8,3 +8,4 @@ variable "kv_public_network_access" { type = bool; default = false }
 
 variable "storage_account_id" { type = string }
 variable "log_analytics_id" { type = string }
+variable "recovery_vault_name" { type = string }
