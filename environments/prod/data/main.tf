@@ -14,7 +14,7 @@ module "mssql_database" {
   source = "../../../modules/database/mssql_database"
 
   name           = var.sql_db_name
-  server_id      = module.mssql_server.server_id
+  server_id      = module.mssql_server.id
   sku_name       = var.sql_db_sku
   zone_redundant = var.sql_zone_redundant
   tags           = var.tags

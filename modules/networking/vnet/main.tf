@@ -24,7 +24,7 @@ resource "azurerm_subnet" "subnets" {
 }
 
 resource "azurerm_network_security_group" "nsg" {
-  for_each            = { for k, v in var.subnets : k => v if k != "AzureFirewallSubnet" }
+  for_each            = { for k, v in var.subnets : k => v if !contains(["AzureFirewallSubnet", "AppGatewaySubnet"], k) }
   name                = "nsg-${each.key}"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -47,7 +47,7 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsg_assoc" {
-  for_each                  = { for k, v in var.subnets : k => v if k != "AzureFirewallSubnet" }
+  for_each                  = { for k, v in var.subnets : k => v if !contains(["AzureFirewallSubnet", "AppGatewaySubnet"], k) }
   subnet_id                 = azurerm_subnet.subnets[each.key].id
   network_security_group_id = azurerm_network_security_group.nsg[each.key].id
 }

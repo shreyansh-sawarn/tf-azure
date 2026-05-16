@@ -20,5 +20,3 @@ variable "public_lb_name" {
 }
 
 variable "log_analytics_id" { type = string }
-
-variable "log_analytics_id" { type = string }
