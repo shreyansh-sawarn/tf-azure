@@ -16,12 +16,12 @@ run "validate_web_app_config" {
   }
 
   assert {
-    condition     = azurerm_linux_web_app.app.name == "test-app"
+    condition     = azurerm_linux_web_app.webapp.name == "test-app"
     error_message = "Web App name did not match"
   }
 
   assert {
-    condition     = azurerm_linux_web_app.app.https_only == true
+    condition     = azurerm_linux_web_app.webapp.https_only == true
     error_message = "HTTPS Only should be enabled"
   }
 }
