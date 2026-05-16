@@ -1,0 +1,8 @@
+project_prefix = "myserverlessdemo"
+location       = "eastus"
+
+# SECURITY WARNING: Do not commit the actual terraform.tfvars file!
+# This is a sample file. Copy this to terraform.tfvars and change the values.
+
+# Must meet Azure password complexity requirements
+admin_password = "ChangeMe123!@#ComplexPassword"

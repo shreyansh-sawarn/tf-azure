@@ -1,0 +1,22 @@
+mock_provider "azurerm" {}
+
+run "validate_service_bus_config" {
+  command = plan
+
+  variables {
+    name                = "test-sb"
+    location            = "eastus"
+    resource_group_name = "test-rg"
+    sku                 = "Standard"
+
+    tags = {
+      Environment = "test"
+      Project     = "portfolio"
+    }
+  }
+
+  assert {
+    condition     = azurerm_servicebus_namespace.sb.name == "test-sb"
+    error_message = "Service Bus name did not match"
+  }
+}

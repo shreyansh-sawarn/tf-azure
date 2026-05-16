@@ -46,3 +46,9 @@ variable "identity_ids" {
   default = []
   description = "List of User Assigned Identity IDs"
 }
+
+variable "custom_data" {
+  type        = string
+  default     = null
+  description = "Custom data to pass to the VMSS instances (e.g. cloud-init script)"
+}

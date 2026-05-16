@@ -16,6 +16,8 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
     public_key = var.admin_ssh_key_public
   }
 
+  custom_data = var.custom_data
+
   source_image_reference {
     publisher = "Canonical"
     offer     = "ubuntu-24_04-lts"
