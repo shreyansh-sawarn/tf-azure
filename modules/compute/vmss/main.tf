@@ -6,6 +6,11 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
   instances           = var.instances
   admin_username      = var.admin_username
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = var.identity_ids
+  }
+
   admin_ssh_key {
     username   = var.admin_username
     public_key = var.admin_ssh_key_public

@@ -40,3 +40,9 @@ variable "backend_address_pool_ids" {
   type    = list(string)
   default = []
 }
+
+variable "identity_ids" {
+  type    = list(string)
+  default = []
+  description = "List of User Assigned Identity IDs"
+}

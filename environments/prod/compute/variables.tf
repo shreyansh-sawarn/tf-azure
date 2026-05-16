@@ -16,6 +16,8 @@ variable "lb_name" {
   description = "Name of the internal load balancer"
 }
 
+variable "key_vault_id" { type = string }
+
 variable "admin_username" {
  type = string; default = "azureuser" }
 variable "admin_password" { type = string; sensitive = true }

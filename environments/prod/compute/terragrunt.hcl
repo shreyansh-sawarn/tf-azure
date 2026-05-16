@@ -21,6 +21,13 @@ dependency "networking" {
   }
 }
 
+dependency "security" {
+  config_path = "../security"
+  mock_outputs = {
+    key_vault_id = "mock-id"
+  }
+}
+
 locals {
   env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 }
@@ -30,6 +37,7 @@ inputs = {
   location            = dependency.foundation.outputs.location
   tags                = local.env_vars.locals.tags
   subnet_id           = dependency.networking.outputs.subnet_ids["app"]
+  key_vault_id        = dependency.security.outputs.key_vault_id
 
   availability_set_name = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-as"
   linux_vm_name        = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-linux-vm"

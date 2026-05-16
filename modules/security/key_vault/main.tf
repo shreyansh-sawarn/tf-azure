@@ -10,6 +10,7 @@ resource "azurerm_key_vault" "vault" {
   purge_protection_enabled      = var.purge_protection_enabled
   enable_rbac_authorization     = true
   sku_name                      = var.sku_name
+
   public_network_access_enabled = var.public_network_access_enabled
 
   tags = var.tags

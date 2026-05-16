@@ -46,3 +46,14 @@ output "log_analytics_id" {
 output "acr_login_server" {
   value = module.container_registry.login_server
 }
+
+module "alerts" {
+  source = "../../../modules/monitoring/alerts"
+
+  resource_group_name = var.resource_group_name
+  action_group_name   = "${var.log_analytics_name}-action-group"
+  short_name          = "opsalerts"
+  admin_email         = "ops-team@example.com"
+  prefix              = "prod"
+  target_resource_ids = [var.vmss_id]
+}

@@ -14,6 +14,13 @@ dependency "foundation" {
   }
 }
 
+dependency "compute" {
+  config_path = "../compute"
+  mock_outputs = {
+    vmss_id = "mock-id"
+  }
+}
+
 locals {
   env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 }
@@ -22,6 +29,7 @@ inputs = {
   resource_group_name = dependency.foundation.outputs.resource_group_name
   location            = dependency.foundation.outputs.location
   tags                = local.env_vars.locals.tags
+  vmss_id             = dependency.compute.outputs.vmss_id
 
   log_analytics_name = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-law"
   log_retention_days = 90

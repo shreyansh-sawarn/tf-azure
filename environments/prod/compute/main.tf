@@ -47,6 +47,25 @@ module "internal_lb" {
   tags                = var.tags
 }
 
+# Sophisticated Identity Pattern: Least Privilege
+module "vm_identity" {
+  source = "../../../modules/security/user_assigned_identity"
+
+  name                = "${var.linux_vm_name}-identity"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+}
+
+# SOPHISTICATED RBAC: Grant VM Identity 'Key Vault Secrets User' 
+module "rbac_vm_to_kv" {
+  source = "../../../modules/security/role_assignment"
+
+  scope                = var.key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = module.vm_identity.principal_id
+}
+
 module "vmss" {
   source = "../../../modules/compute/vmss"
 
@@ -58,7 +77,12 @@ module "vmss" {
   admin_username       = var.admin_username
   admin_ssh_key_public = var.admin_ssh_key_public
   backend_address_pool_ids = [module.internal_lb.backend_pool_id]
+  identity_ids         = [module.vm_identity.id]
   tags                 = var.tags
+}
+
+output "vmss_id" {
+  value = module.vmss.id
 }
 
 output "linux_vm_private_ip" {

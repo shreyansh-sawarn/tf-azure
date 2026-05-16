@@ -14,3 +14,5 @@ variable "service_bus_name" { type = string }
 variable "sb_sku" { type = string; default = "Standard" }
 
 variable "logic_app_name" { type = string }
+
+variable "vmss_id" { type = string }
