@@ -4,6 +4,14 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = var.resource_group_name
   address_space       = var.address_space
   tags                = var.tags
+
+  dynamic "ddos_protection_plan" {
+    for_each = var.ddos_protection_plan_id != null ? [1] : []
+    content {
+      id     = var.ddos_protection_plan_id
+      enable = true
+    }
+  }
 }
 
 resource "azurerm_subnet" "subnets" {
@@ -12,6 +20,7 @@ resource "azurerm_subnet" "subnets" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = each.value.address_prefixes
+  service_endpoints    = each.value.service_endpoints
 }
 
 resource "azurerm_network_security_group" "nsg" {

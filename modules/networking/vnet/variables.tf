@@ -20,14 +20,11 @@ variable "address_space" {
 }
 
 variable "subnets" {
-  type        = map(object({ address_prefixes = list(string) }))
-  description = "Map of subnets to create"
-  default = {
-    web                 = { address_prefixes = ["10.0.1.0/24"] }
-    app                 = { address_prefixes = ["10.0.2.0/24"] }
-    db                  = { address_prefixes = ["10.0.3.0/24"] }
-    AzureFirewallSubnet = { address_prefixes = ["10.0.4.0/24"] }
-  }
+  type = map(object({
+    address_prefixes  = list(string)
+    service_endpoints = optional(list(string), [])
+  }))
+  description = "Map of subnets to create, with optional service endpoints"
 }
 
 variable "nsg_rules" {
@@ -66,6 +63,17 @@ variable "nsg_rules" {
         destination_port_range     = "80"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
+      },
+      {
+        name                       = "DenyAllInbound"
+        priority                   = 4096
+        direction                  = "Inbound"
+        access                     = "Deny"
+        protocol                   = "*"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
       }
     ]
     app = [
@@ -78,6 +86,17 @@ variable "nsg_rules" {
         source_port_range          = "*"
         destination_port_range     = "8080"
         source_address_prefix      = "10.0.1.0/24"
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "DenyAllInbound"
+        priority                   = 4096
+        direction                  = "Inbound"
+        access                     = "Deny"
+        protocol                   = "*"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
         destination_address_prefix = "*"
       }
     ]
@@ -92,9 +111,26 @@ variable "nsg_rules" {
         destination_port_range     = "1433"
         source_address_prefix      = "10.0.2.0/24"
         destination_address_prefix = "*"
+      },
+      {
+        name                       = "DenyAllInbound"
+        priority                   = 4096
+        direction                  = "Inbound"
+        access                     = "Deny"
+        protocol                   = "*"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
       }
     ]
   }
+}
+
+variable "ddos_protection_plan_id" {
+  type        = string
+  default     = null
+  description = "ID of an existing DDoS Protection Plan. Set to null to disable."
 }
 
 variable "tags" {

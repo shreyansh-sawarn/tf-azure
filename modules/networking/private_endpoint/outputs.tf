@@ -3,7 +3,12 @@ output "id" {
   description = "The ID of the private endpoint"
 }
 
-output "private_ip" {
-  value       = azurerm_private_endpoint.pe.private_service_connection[0].private_ip_address
-  description = "The private IP address of the endpoint"
+output "dns_zone_id" {
+  value       = local.dns_zone_id
+  description = "The ID of the private DNS zone (created or existing)"
+}
+
+output "fqdn" {
+  value       = azurerm_private_endpoint.pe.custom_dns_configs[0].fqdn
+  description = "The FQDN of the private endpoint"
 }

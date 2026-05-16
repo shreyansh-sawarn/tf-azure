@@ -23,3 +23,15 @@ variable "tags" {
   default     = {}
   description = "Tags to be applied to the resource"
 }
+
+variable "sku_name" {
+  type        = string
+  default     = "AZFW_VNet"
+  description = "SKU name of the Firewall. Possible values are AZFW_VNet and AZFW_Hub."
+}
+
+variable "sku_tier" {
+  type        = string
+  default     = "Standard"
+  description = "SKU tier of the Firewall. Possible values are Standard and Premium."
+}

@@ -25,6 +25,25 @@ module "firewall" {
   tags                = var.tags
 }
 
+module "route_table" {
+  source = "../../../modules/networking/route_table"
+
+  name                = "${var.vnet_name}-rt"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_ids          = [module.vnet.subnet_ids["app"], module.vnet.subnet_ids["db"]]
+
+  routes = [
+    {
+      name           = "route-to-firewall"
+      address_prefix = "0.0.0.0/0"
+      next_hop_type  = "VirtualAppliance"
+      next_hop_ip    = module.firewall.private_ip
+    }
+  ]
+  tags = var.tags
+}
+
 output "vnet_id" {
   value = module.vnet.vnet_id
 }

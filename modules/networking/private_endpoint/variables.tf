@@ -38,6 +38,18 @@ variable "dns_zone_name" {
   description = "Name of the private DNS zone"
 }
 
+variable "create_dns_zone" {
+  type        = bool
+  default     = true
+  description = "Whether to create a new private DNS zone or use an existing one"
+}
+
+variable "existing_dns_zone_id" {
+  type        = string
+  default     = null
+  description = "ID of an existing private DNS zone (used when create_dns_zone = false)"
+}
+
 variable "tags" {
   type        = map(string)
   default     = {}

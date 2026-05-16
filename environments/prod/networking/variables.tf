@@ -61,3 +61,18 @@ variable "firewall_sku_tier" {
   type        = string
   default     = "Standard"
 }
+
+variable "app_gateway_name" {
+  type        = string
+  description = "Name of the Application Gateway"
+}
+
+variable "waf_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "waf_mode" {
+  type    = string
+  default = "Prevention"
+}

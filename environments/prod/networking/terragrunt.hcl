@@ -23,14 +23,22 @@ inputs = {
   location            = dependency.foundation.outputs.location
   vnet_name           = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-vnet"
   firewall_name       = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-fw"
+  firewall_sku_tier   = "Premium"
+  app_gateway_name    = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-agw"
   
   address_space       = ["10.1.0.0/16"]
   subnets = {
-    web                 = { address_prefixes = ["10.1.1.0/24"] }
-    app                 = { address_prefixes = ["10.1.2.0/24"] }
-    db                  = { address_prefixes = ["10.1.3.0/24"] }
-    AzureFirewallSubnet = { address_prefixes = ["10.1.4.0/24"] }
+    web                 = { address_prefixes = ["10.1.1.0/24"], service_endpoints = [] }
+    app                 = { address_prefixes = ["10.1.2.0/24"], service_endpoints = ["Microsoft.KeyVault", "Microsoft.Storage"] }
+    db                  = { address_prefixes = ["10.1.3.0/24"], service_endpoints = ["Microsoft.Sql"] }
+    AzureFirewallSubnet = { address_prefixes = ["10.1.4.0/24"], service_endpoints = [] }
+    AppGatewaySubnet    = { address_prefixes = ["10.1.5.0/24"], service_endpoints = [] }
   }
+
+  # DDoS Protection: Disabled by default for cost control.
+  # In production, provide an existing DDoS Protection Plan ID:
+  # ddos_protection_plan_id = "/subscriptions/.../ddosProtectionPlans/enterprise-ddos"
+  ddos_protection_plan_id = null
 
   tags = local.env_vars.locals.tags
 }

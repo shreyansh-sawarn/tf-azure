@@ -1,3 +1,8 @@
+locals {
+  dns_zone_id   = var.create_dns_zone ? azurerm_private_dns_zone.zone[0].id : var.existing_dns_zone_id
+  dns_zone_name = var.create_dns_zone ? azurerm_private_dns_zone.zone[0].name : var.dns_zone_name
+}
+
 resource "azurerm_private_endpoint" "pe" {
   name                = var.name
   location            = var.location
@@ -13,21 +18,23 @@ resource "azurerm_private_endpoint" "pe" {
 
   private_dns_zone_group {
     name                 = "dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.zone.id]
+    private_dns_zone_ids = [local.dns_zone_id]
   }
 
   tags = var.tags
 }
 
 resource "azurerm_private_dns_zone" "zone" {
+  count               = var.create_dns_zone ? 1 : 0
   name                = var.dns_zone_name
   resource_group_name = var.resource_group_name
   tags                = var.tags
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "link" {
+  count                 = var.create_dns_zone ? 1 : 0
   name                  = "${var.name}-link"
   resource_group_name   = var.resource_group_name
-  private_dns_zone_name = azurerm_private_dns_zone.zone.name
+  private_dns_zone_name = local.dns_zone_name
   virtual_network_id    = var.vnet_id
 }
