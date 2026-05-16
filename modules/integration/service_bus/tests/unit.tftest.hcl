@@ -4,7 +4,7 @@ run "validate_service_bus_config" {
   command = plan
 
   variables {
-    name                = "test-sb"
+    name                = "test-servicebus"
     location            = "eastus"
     resource_group_name = "test-rg"
     sku                 = "Standard"
@@ -17,7 +17,7 @@ run "validate_service_bus_config" {
   }
 
   assert {
-    condition     = azurerm_servicebus_namespace.sb.name == "test-sb"
+    condition     = azurerm_servicebus_namespace.sb.name == "test-servicebus"
     error_message = "Service Bus name did not match"
   }
 }
