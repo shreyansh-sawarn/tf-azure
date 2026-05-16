@@ -33,4 +33,5 @@ inputs = {
   storage_containers   = ["backups", "logs", "prod-data"]
   
   sql_db_sku           = "S0"
+  sql_zone_redundant   = true
 }

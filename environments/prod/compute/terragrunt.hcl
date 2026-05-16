@@ -36,6 +36,7 @@ inputs = {
   linux_vm_size        = "Standard_DS1_v2"
   windows_vm_name      = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-win-vm"
   windows_vm_size      = "Standard_D2s_v3"
+  lb_name              = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-internal-lb"
   
   admin_password       = "placeholder-for-portfolio-demo"
   admin_ssh_key_public = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyZMOnA7PZ/m3NPeAY6rsh884iE45T+r8/64uUWCY1410t6T+p9OqL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV test@example.com"

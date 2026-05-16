@@ -41,6 +41,7 @@ inputs = {
   web_app_name          = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-web-app"
   function_app_name     = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-func"
   app_insights_name     = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-ai"
+  public_lb_name        = "${local.env_vars.locals.project_name}-${local.env_vars.locals.environment}-public-lb"
 
   storage_account_name       = dependency.data.outputs.storage_account_name
   storage_account_access_key = "placeholder-for-portfolio-demo"

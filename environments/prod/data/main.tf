@@ -13,11 +13,13 @@ module "mssql_server" {
 module "mssql_database" {
   source = "../../../modules/database/mssql_database"
 
-  name      = var.sql_db_name
-  server_id = module.mssql_server.id
-  sku_name  = var.sql_db_sku
-  tags      = var.tags
+  name           = var.sql_db_name
+  server_id      = module.mssql_server.server_id
+  sku_name       = var.sql_db_sku
+  zone_redundant = var.sql_zone_redundant
+  tags           = var.tags
 }
+
 
 module "storage_account" {
   source = "../../../modules/storage/storage_account"

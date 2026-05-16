@@ -42,6 +42,16 @@ module "app_insights" {
   tags                = var.tags
 }
 
+module "public_lb" {
+  source = "../../../modules/networking/load_balancer"
+
+  name                = var.public_lb_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  type                = "Public"
+  tags                = var.tags
+}
+
 output "web_app_default_hostname" {
   value = module.web_app.default_hostname
 }

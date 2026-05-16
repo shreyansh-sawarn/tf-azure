@@ -8,6 +8,7 @@ variable "sql_db_name" { type = string }
 variable "sql_admin_username" { type = string }
 variable "sql_admin_password" { type = string }
 variable "sql_db_sku" { type = string; default = "Basic" }
+variable "sql_zone_redundant" { type = bool; default = false }
 variable "sql_public_network_access" { type = bool; default = false }
 
 # Storage

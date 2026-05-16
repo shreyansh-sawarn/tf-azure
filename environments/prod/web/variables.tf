@@ -14,4 +14,11 @@ variable "storage_account_access_key" { type = string; sensitive = true }
 
 variable "app_insights_name" { type = string }
 
+variable "public_lb_name" {
+  type        = string
+  description = "Name of the public load balancer"
+}
+
+variable "log_analytics_id" { type = string }
+
 variable "log_analytics_id" { type = string }

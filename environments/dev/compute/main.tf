@@ -36,6 +36,31 @@ module "windows_vm" {
   tags                = var.tags
 }
 
+module "internal_lb" {
+  source = "../../../modules/networking/load_balancer"
+
+  name                = var.lb_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  type                = "Internal"
+  subnet_id           = var.subnet_id
+  tags                = var.tags
+}
+
+module "vmss" {
+  source = "../../../modules/compute/vmss"
+
+  name                 = "${var.linux_vm_name}-ss"
+  location             = var.location
+  resource_group_name  = var.resource_group_name
+  sku                  = var.linux_vm_size
+  subnet_id            = var.subnet_id
+  admin_username       = var.admin_username
+  admin_ssh_key_public = var.admin_ssh_key_public
+  backend_address_pool_ids = [module.internal_lb.backend_pool_id]
+  tags                 = var.tags
+}
+
 output "linux_vm_private_ip" {
   value = module.linux_vm.private_ip_address
 }
