@@ -23,7 +23,7 @@ module "diag_keyvault" {
 
   name               = "diag-keyvault"
   target_resource_id = module.key_vault.id
-  log_analytics_workspace_id = var.log_analytics_id
+  workspace_id       = var.log_analytics_id
 }
 
 module "recovery_vault" {
