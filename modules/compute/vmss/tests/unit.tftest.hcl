@@ -10,7 +10,7 @@ run "validate_vmss_config" {
     sku                  = "Standard_B1s"
     instances            = 2
     admin_username       = "azureuser"
-    admin_ssh_key_public = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC8zf9vHSA7OtQwWnexPIq8pSfrcb4L4/3jLb6sAF39oxJa/tLCtADt9WfcOt72a6MSukfXZYaXE0RD1NdlHyQ5wigk2k+WOEg+HxXjNpXU5jnx3OVTjWrV0GwVZcMCurYUrYFQ+1aJk92X2q28XBuImgtSu3yKI6+Llthou0PONyvhrvaLs+DpaAy0mOGLbu++gYg+SSLZaUJnRtb5dv6Ju03quA1lRBJHKU1auhNGtN5YkXQQJwEPg== test@example.com"
+    admin_ssh_key_public = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyZMOnA7PZ/m3NPeAY6rsh884iE45T+r8/64uUWCY1410t6T+p9OqL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV9qL7Q8C4q9+N/rV test@example.com""
     subnet_id            = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/test-subnet"
 
     custom_data = "IyEvYmluL2Jhc2gKYXB0LWdldCB1cGRhdGUK" # base64 placeholder
