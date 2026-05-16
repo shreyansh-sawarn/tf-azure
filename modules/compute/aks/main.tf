@@ -23,18 +23,18 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   # Advanced Networking (Azure CNI)
   network_profile {
-    network_plugin     = "azure"
-    network_policy     = "azure"
-    load_balancer_sku  = "standard"
-    service_cidr       = var.service_cidr
-    dns_service_ip     = var.dns_service_ip
+    network_plugin    = "azure"
+    network_policy    = "azure"
+    load_balancer_sku = "standard"
+    service_cidr      = var.service_cidr
+    dns_service_ip    = var.dns_service_ip
   }
 
   # Sophisticated Identity & Security Add-ons
   workload_identity_enabled = true
   oidc_issuer_enabled       = true
   azure_policy_enabled      = true
-  
+
   key_vault_secrets_provider {
     secret_rotation_enabled = true
   }

@@ -19,7 +19,7 @@ module "vmss" {
   subnet_id            = var.subnet_id
   admin_username       = var.admin_username
   admin_ssh_key_public = var.admin_ssh_key_public
-  
+
   backend_address_pool_ids = [module.public_lb.backend_pool_id]
 
   custom_data = base64encode(<<-EOF

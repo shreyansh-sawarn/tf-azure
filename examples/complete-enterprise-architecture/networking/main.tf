@@ -6,7 +6,7 @@ module "vnet" {
   vnet_name           = var.vnet_name
   address_space       = var.address_space
   subnets             = var.subnets
-  
+
   # Allow HTTP traffic for the demo webpage
   nsg_rules = {
     compute = [

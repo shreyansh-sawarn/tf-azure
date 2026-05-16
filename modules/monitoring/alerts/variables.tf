@@ -1,23 +1,23 @@
-variable "resource_group_name" { 
+variable "resource_group_name" {
   type = string
 }
 
-variable "action_group_name" { 
+variable "action_group_name" {
   type = string
 }
 
-variable "short_name" { 
+variable "short_name" {
   type = string
 }
 
-variable "admin_email" { 
+variable "admin_email" {
   type = string
 }
 
-variable "prefix" { 
+variable "prefix" {
   type = string
 }
 
-variable "target_resource_ids" { 
+variable "target_resource_ids" {
   type = list(string)
 }

@@ -1,17 +1,17 @@
-variable "name" { 
+variable "name" {
   type = string
 }
 
-variable "location" { 
+variable "location" {
   type = string
 }
 
-variable "resource_group_name" { 
+variable "resource_group_name" {
   type = string
 }
 
 variable "tags" {
   type = map(string)
   default = {
-}
+  }
 }

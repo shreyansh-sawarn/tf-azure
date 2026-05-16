@@ -1,54 +1,54 @@
-variable "resource_group_name" { 
+variable "resource_group_name" {
   type = string
 }
 
-variable "location" { 
+variable "location" {
   type = string
 }
 
-variable "tags" { 
+variable "tags" {
   type = map(string)
 }
 
-variable "log_analytics_name" { 
+variable "log_analytics_name" {
   type = string
 }
 
 variable "log_analytics_sku" {
-  type = string
+  type    = string
   default = "PerGB2018"
 }
 variable "log_retention_days" {
-  type = number
+  type    = number
   default = 30
 }
 
-variable "acr_name" { 
+variable "acr_name" {
   type = string
 }
 
 variable "acr_sku" {
-  type = string
+  type    = string
   default = "Basic"
 }
 variable "acr_admin_enabled" {
-  type = bool
+  type    = bool
   default = false
 }
 
-variable "service_bus_name" { 
+variable "service_bus_name" {
   type = string
 }
 
 variable "sb_sku" {
-  type = string
+  type    = string
   default = "Standard"
 }
 
-variable "logic_app_name" { 
+variable "logic_app_name" {
   type = string
 }
 
-variable "vmss_id" { 
+variable "vmss_id" {
   type = string
 }

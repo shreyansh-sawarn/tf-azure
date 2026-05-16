@@ -10,16 +10,16 @@ module "availability_set" {
 module "linux_vm" {
   source = "../../../modules/compute/linux_vm"
 
-  name                = var.linux_vm_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  subnet_id           = var.subnet_id
-  vm_size             = var.linux_vm_size
-  admin_username      = var.admin_username
-  admin_password      = var.admin_password
+  name                 = var.linux_vm_name
+  location             = var.location
+  resource_group_name  = var.resource_group_name
+  subnet_id            = var.subnet_id
+  vm_size              = var.linux_vm_size
+  admin_username       = var.admin_username
+  admin_password       = var.admin_password
   admin_ssh_key_public = var.admin_ssh_key_public
   availability_set_id  = module.availability_set.id
-  tags                = var.tags
+  tags                 = var.tags
 }
 
 module "windows_vm" {
@@ -32,7 +32,7 @@ module "windows_vm" {
   vm_size             = var.windows_vm_size
   admin_username      = var.admin_username
   admin_password      = var.admin_password
-  availability_set_id  = module.availability_set.id
+  availability_set_id = module.availability_set.id
   tags                = var.tags
 }
 
@@ -50,15 +50,15 @@ module "internal_lb" {
 module "vmss" {
   source = "../../../modules/compute/vmss"
 
-  name                 = "${var.linux_vm_name}-ss"
-  location             = var.location
-  resource_group_name  = var.resource_group_name
-  sku                  = var.linux_vm_size
-  subnet_id            = var.subnet_id
-  admin_username       = var.admin_username
-  admin_ssh_key_public = var.admin_ssh_key_public
+  name                     = "${var.linux_vm_name}-ss"
+  location                 = var.location
+  resource_group_name      = var.resource_group_name
+  sku                      = var.linux_vm_size
+  subnet_id                = var.subnet_id
+  admin_username           = var.admin_username
+  admin_ssh_key_public     = var.admin_ssh_key_public
   backend_address_pool_ids = [module.internal_lb.backend_pool_id]
-  tags                 = var.tags
+  tags                     = var.tags
 }
 
 output "linux_vm_private_ip" {

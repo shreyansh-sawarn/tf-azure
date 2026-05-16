@@ -56,13 +56,13 @@ variable "firewall_name" {
 }
 
 variable "firewall_sku_name" {
-  type        = string
-  default     = "AZFW_VNet"
+  type    = string
+  default = "AZFW_VNet"
 }
 
 variable "firewall_sku_tier" {
-  type        = string
-  default     = "Standard"
+  type    = string
+  default = "Standard"
 }
 
 variable "app_gateway_name" {

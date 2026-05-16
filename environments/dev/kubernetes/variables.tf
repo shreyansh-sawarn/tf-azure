@@ -1,57 +1,57 @@
-variable "resource_group_name" { 
+variable "resource_group_name" {
   type = string
 }
 
-variable "location" { 
+variable "location" {
   type = string
 }
 
-variable "tags" { 
+variable "tags" {
   type = map(string)
 }
 
-variable "cluster_name" { 
+variable "cluster_name" {
   type = string
 }
 
-variable "dns_prefix" { 
+variable "dns_prefix" {
   type = string
 }
 
 variable "kubernetes_version" {
-  type = string
+  type    = string
   default = "1.30"
 }
 
 variable "node_count" {
-  type = number
+  type    = number
   default = 2
 }
 variable "node_size" {
-  type = string
+  type    = string
   default = "Standard_DS2_v2"
 }
-variable "subnet_id" { 
+variable "subnet_id" {
   type = string
 }
 
 variable "enable_auto_scaling" {
-  type = bool
+  type    = bool
   default = true
 }
 variable "min_node_count" {
-  type = number
+  type    = number
   default = 1
 }
 variable "max_node_count" {
-  type = number
+  type    = number
   default = 3
 }
 
-variable "log_analytics_id" { 
+variable "log_analytics_id" {
   type = string
 }
 
-variable "acr_id" { 
+variable "acr_id" {
   type = string
 }

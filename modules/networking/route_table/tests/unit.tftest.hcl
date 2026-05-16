@@ -8,7 +8,7 @@ run "validate_route_table_config" {
     location            = "eastus"
     resource_group_name = "test-rg"
     subnet_ids          = ["/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/test-subnet"]
-    
+
     routes = [
       {
         name           = "test-route"

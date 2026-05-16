@@ -1,32 +1,32 @@
-variable "resource_group_name" { 
+variable "resource_group_name" {
   type = string
 }
 
-variable "location" { 
+variable "location" {
   type = string
 }
 
-variable "tags" { 
+variable "tags" {
   type = map(string)
 }
 
-variable "key_vault_name" { 
+variable "key_vault_name" {
   type = string
 }
 
 variable "kv_sku_name" {
-  type = string
+  type    = string
   default = "standard"
 }
 variable "kv_public_network_access" {
-  type = bool
+  type    = bool
   default = false
 }
 
-variable "storage_account_id" { 
+variable "storage_account_id" {
   type = string
 }
 
-variable "log_analytics_id" { 
+variable "log_analytics_id" {
   type = string
 }

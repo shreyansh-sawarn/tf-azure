@@ -1,38 +1,38 @@
-variable "resource_group_name" { 
+variable "resource_group_name" {
   type = string
 }
 
-variable "location" { 
+variable "location" {
   type = string
 }
 
-variable "tags" { 
+variable "tags" {
   type = map(string)
 }
 
-variable "subnet_id" { 
+variable "subnet_id" {
   type = string
 }
 
-variable "availability_set_name" { 
+variable "availability_set_name" {
   type = string
 }
 
-variable "linux_vm_name" { 
+variable "linux_vm_name" {
   type = string
 }
 
 variable "linux_vm_size" {
-  type = string
+  type    = string
   default = "Standard_B1s"
 }
 
-variable "windows_vm_name" { 
+variable "windows_vm_name" {
   type = string
 }
 
 variable "windows_vm_size" {
-  type = string
+  type    = string
   default = "Standard_B2s"
 }
 
@@ -42,14 +42,14 @@ variable "lb_name" {
 }
 
 variable "admin_username" {
-  type = string
+  type    = string
   default = "azureuser"
 }
 variable "admin_password" {
-  type = string
+  type      = string
   sensitive = true
 }
 variable "admin_ssh_key_public" {
-  type = string
+  type    = string
   default = null
 }

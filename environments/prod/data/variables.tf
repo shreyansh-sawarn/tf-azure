@@ -1,71 +1,71 @@
-variable "resource_group_name" { 
+variable "resource_group_name" {
   type = string
 }
 
-variable "location" { 
+variable "location" {
   type = string
 }
 
-variable "tags" { 
+variable "tags" {
   type = map(string)
 }
 
 # SQL
-variable "sql_server_name" { 
+variable "sql_server_name" {
   type = string
 }
 
-variable "sql_db_name" { 
+variable "sql_db_name" {
   type = string
 }
 
-variable "sql_admin_username" { 
+variable "sql_admin_username" {
   type = string
 }
 
-variable "sql_admin_password" { 
+variable "sql_admin_password" {
   type = string
 }
 
 variable "sql_db_sku" {
-  type = string
+  type    = string
   default = "Basic"
 }
 variable "sql_zone_redundant" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "sql_backup_storage_type" {
-  type = string
+  type    = string
   default = "Local"
 }
 variable "sql_backup_retention_days" {
-  type = number
+  type    = number
   default = 7
 }
 variable "sql_public_network_access" {
-  type = bool
+  type    = bool
   default = false
 }
 
 # Storage
-variable "storage_account_name" { 
+variable "storage_account_name" {
   type = string
 }
 
 variable "storage_tier" {
-  type = string
+  type    = string
   default = "Standard"
 }
 variable "storage_replication" {
-  type = string
+  type    = string
   default = "LRS"
 }
 variable "storage_public_network_access" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "storage_containers" {
-  type = list(string)
+  type    = list(string)
   default = []
 }

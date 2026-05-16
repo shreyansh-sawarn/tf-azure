@@ -8,7 +8,7 @@ run "validate_app_gateway_config" {
     location            = "eastus"
     resource_group_name = "test-rg"
     subnet_id           = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/AppGatewaySubnet"
-    
+
     waf_enabled = true
     waf_mode    = "Prevention"
 
