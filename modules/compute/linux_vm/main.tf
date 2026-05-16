@@ -1,5 +1,5 @@
 resource "azurerm_network_interface" "nic" {
-  name                = "${var.name}-nic"
+  name                = local.nic_name
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -24,7 +24,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   network_interface_ids = [azurerm_network_interface.nic.id]
 
   dynamic "admin_ssh_key" {
-    for_each = var.admin_ssh_key_public != null ? [1] : []
+    for_each = local.ssh_key_list
     content {
       username   = var.admin_username
       public_key = var.admin_ssh_key_public

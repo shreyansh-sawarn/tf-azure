@@ -1,5 +1,5 @@
 resource "azurerm_public_ip" "agw_pip" {
-  name                = "${var.name}-pip"
+  name                = local.pip_name
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
@@ -68,7 +68,7 @@ resource "azurerm_application_gateway" "agw" {
   }
 
   dynamic "waf_configuration" {
-    for_each = var.waf_enabled ? [1] : []
+    for_each = local.waf_config_list
     content {
       enabled          = true
       firewall_mode    = var.waf_mode

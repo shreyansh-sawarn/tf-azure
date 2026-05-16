@@ -18,6 +18,7 @@ A comprehensive, production-ready Azure infrastructure template repository. This
   - **Secretless Auth:** Sophisticated IAM patterns using **User-Assigned Managed Identities** and Granular RBAC.
   - **Layer 7 Protection:** **Application Gateway with WAF (OWASP)** and **Azure Firewall** integrated via forced tunneling (UDR).
 - **📈 High Availability & Elasticity:** 
+  - **Kubernetes (AKS):** Managed **Azure Kubernetes Service** with **Azure CNI**, **Workload Identity**, and **Auto-Scaling** node pools.
   - **Auto-Scaling:** Virtual Machine Scale Sets (VMSS) with CPU-based scaling.
   - **Load Balancing:** Tiered Public and Internal Load Balancers for service resiliency.
   - **Redundancy:** Cross-region GRS storage and Zone-Redundant SQL databases.

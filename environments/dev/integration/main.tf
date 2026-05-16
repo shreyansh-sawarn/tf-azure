@@ -46,3 +46,7 @@ output "log_analytics_id" {
 output "acr_login_server" {
   value = module.container_registry.login_server
 }
+
+output "acr_id" {
+  value = module.container_registry.id
+}
