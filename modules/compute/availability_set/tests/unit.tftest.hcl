@@ -15,7 +15,7 @@ run "validate_availability_set_config" {
   }
 
   assert {
-    condition     = azurerm_availability_set.as.name == "test-as"
+    condition     = azurerm_availability_set.avset.name == "test-as"
     error_message = "Availability Set name did not match"
   }
 }
