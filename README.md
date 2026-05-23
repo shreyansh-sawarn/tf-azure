@@ -61,39 +61,14 @@ graph TB
 
 Traditional IaC is static—but this repository integrates a **closed-loop AI Operations Lifecycle** that assists engineers across all phases of the development and operations cycle:
 
-<details>
-<summary>🔍 Click to expand AIOps Lifecycle Diagram</summary>
-
 ```mermaid
 graph LR
-    subgraph "Phase 5: Development (Testing)"
-        I[Variable Definitions] -->|test_generator.py| J[generated.tftest.hcl]
-    end
-
-    subgraph "Phase 1: Design (Security)"
-        A[Compliance Prompts] -->|policy_generator.py| B[policy/infra_policies.rego]
-    end
-
-    subgraph "Phase 2: Review (FinOps)"
-        C[Infracost JSON] -->|cost_optimizer.py| D[FinOps Actionable Reports]
-    end
-
-    subgraph "Phase 3: Deploy (Debugging)"
-        E[Failed Deploy Logs] -->|failure_analyzer.py| F[Diagnostic Fix Blueprints]
-    end
-
-    subgraph "Phase 4: Monitor (Ops)"
-        G[Live State Drift] -->|drift_analyzer.py| H[Revert CLI / Adopt PR]
-    end
-
-    J --> A
-    B --> C
-    D --> E
-    F --> G
-    H --> I
+    Dev["💻 1. Development<br/>(test_generator.py)"] --> Design["🛡️ 2. Design<br/>(policy_generator.py)"]
+    Design --> Review["💰 3. Review<br/>(cost_optimizer.py)"]
+    Review --> Deploy["🚨 4. Deploy<br/>(failure_analyzer.py)"]
+    Deploy --> Monitor["🔍 5. Monitor<br/>(drift_analyzer.py)"]
+    Monitor --> Dev
 ```
-
-</details>
 
 #### Scheduled Auditing & Auto-Remediation Flow
 
