@@ -27,7 +27,7 @@ A comprehensive, production-ready Azure infrastructure template repository. This
   - **Database PITR:** Point-in-time recovery enabled with up to 35-day retention.
 - **🧪 Robust Validation:** 
   - **Offline Unit Testing:** Automated **Terraform Native Testing** (`.tftest.hcl`) utilizing **Mock Providers** for CI/CD validation without Azure credentials.
-- **🤖 AI-Driven Drift Remediation:** Integrates Gemini LLM to analyze raw plan drifts, audit violations against OPA policies, and output auto-remediation scripts (revert CLI vs. adopt HCL patches).
+- **🤖 Unified AIOps Lifecycle Suite:** An offline-capable AI operations suite leveraging Gemini 2.5 to assist in all IaC phases: OPA policy generation (Design), STRIDE threat modeling (Security Review), FinOps cost optimization (Review), deployment troubleshooting (Debugging), and automated test-suite generation (Development).
 - **🔓 Open Source Friendly:** 100% compatible with **OpenTofu 1.6+** and Terraform 1.5+, ensuring no vendor lock-in.
 
 
@@ -67,10 +67,10 @@ sequenceDiagram
     participant CRON as GitHub Actions (Cron)
     participant TG as Terragrunt/Terraform
     participant OPA as OPA Policy Engine
-    participant script as scripts/ai_drift_analyzer.py
+    participant script as aiops/drift_analyzer.py
     participant LLM as Gemini API (LLM)
     participant Git as GitHub (Issues / PRs)
-
+    
     CRON->>TG: run terragrunt plan -out=tfplan.binary
     TG->>TG: Compare live Azure state with Git config
     TG-->>CRON: Export plan to JSON (tfplan.json)
@@ -95,6 +95,16 @@ tf-azure/
 │   ├── compute/              # {vmss, linux_vm, windows_vm}
 │   ├── database/             # {mssql_server, mssql_database}
 │   └── security/             # {key_vault, rsv, identities, rbac}
+├── aiops/                    # Unified AI Operations Lifecycle Suite
+│   ├── mock_data/            # Mock plans, logs, cost and variable inputs
+│   ├── expected_reports/     # Pre-cached offline fallbacks for GHA and CLI demos
+│   ├── drift_analyzer.py     # Plan diff & compliance auditor
+│   ├── cost_optimizer.py     # FinOps budget analyzer
+│   ├── failure_analyzer.py   # Deployment log troubleshooter
+│   ├── policy_generator.py   # Natural language to OPA policy translator
+│   ├── security_reviewer.py  # STRIDE security reviewer
+│   ├── copilot.py            # Conversational repository copilot CLI
+│   └── test_generator.py     # Automated HCL unit test case generator
 ├── environments/             # Terragrunt Grouped Stacks
 │   ├── dev/                  # Cost-optimized Development environment
 │   └── prod/                 # High-performance, HA Production environment
@@ -142,10 +152,13 @@ To make this project as reviewer-friendly as possible, I've created specialized 
    cd environments/dev
    terragrunt run-all plan
    ```
-4. **Run AI Drift Analyzer Demo (No Azure login required):**
+4. **Run the AIOps Suite Demo (No Azure login or API key required):**
    ```bash
-   # Generates a local drift_report.md report from mock data
+   # Audit drifts, OPA policy compliance, and FinOps costs:
    python aiops/drift_analyzer.py --demo
+   python aiops/cost_optimizer.py --demo
+   python aiops/security_reviewer.py --demo
+   python aiops/test_generator.py --scan-modules --demo
    ```
 
 ---
