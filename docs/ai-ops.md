@@ -1,120 +1,106 @@
-# 🤖 AI-Driven Operations (AIOps): Drift Detection & Compliance Engine
+# 🤖 AI-Driven Operations (AIOps): The Closed-Loop IaC Lifecycle
 
-This document provides a deep dive into the architecture, design, and operations of the **AI IaC Drift Remediation Engine** implemented in this repository. 
+This document provides a deep dive into the architecture, design, and operations of the **AIOps Lifecycle Suite** implemented in this repository. 
 
 ---
 
 ## 📖 Operational Philosophy
 
-Traditional Infrastructure as Code (IaC) pipelines are excellent at deploying static architectures. However, once infrastructure is live, it is subject to **configuration drift**—untracked manual modifications made directly via cloud consoles or CLIs.
+Traditional Infrastructure as Code (IaC) loops are passive—they deploy static configurations but require heavy manual intervention when things go wrong, when costs spike, or when configuration drift occurs.
 
-We solve this problem by combining three modern DevOps pillars into an automated feedback loop:
-1. **State Auditing**: Detecting live resources that differ from git configurations via Terragrunt/Terraform.
-2. **Policy-as-Code Enforcment**: Validating those changes against strict compliance parameters defined in Open Policy Agent (OPA) policies.
-3. **Large Language Models (LLMs)**: Employing the Gemini API to act as an automated SecOps Engineer—interpreting differences, mapping risks, and writing remediation scripts.
+To build an enterprise-ready pipeline, this repository integrates a **closed-loop AI Operations Lifecycle** that actively assists engineers across four critical phases:
+1. **Compliance Policy Generation (Design Phase)**: Translates security compliance guidelines into OPA rules.
+2. **FinOps Cost Optimization (Review Phase)**: Analyzes Infracost differentials and proposes capacity scaling cost-cutting patches.
+3. **Deployment Failure Diagnostics (Debugging Phase)**: Ingests API trace errors and generates resolutions.
+4. **Drift Remediation (Monitoring Phase)**: Audits live resources against Git configurations and writes revert/adoption code.
 
 ---
 
-## 🏗️ Technical Architecture & Data Flow
-
-The operations pipeline runs automatically via scheduled automation (GitHub Actions) or manually for pre-deployment reviews.
+## 🏗️ Lifecycle Data Flow
 
 ```mermaid
-sequenceDiagram
-    autonumber
-    participant DevOps as DevOps Engineer
-    participant GitHub as GitHub Actions
-    participant Azure as Microsoft Azure
-    participant OPA as OPA Engine (Conftest)
-    participant Analyzer as aiops/drift_analyzer.py
-    participant Gemini as Gemini LLM API
-
-    DevOps->>GitHub: Trigger Audit (Cron / Dispatch)
-    GitHub->>Azure: Authenticate via OIDC (Secretless)
-    GitHub->>Azure: Run terragrunt plan -out=tfplan.binary
-    Azure-->>GitHub: Return state comparison
-    GitHub->>GitHub: Convert plan to JSON (tfplan.json)
-    GitHub->>OPA: conftest test tfplan.json --policy policy/
-    OPA-->>GitHub: Generate policy failures (policy_report.json)
-    GitHub->>Analyzer: Execute with plan + policy inputs
-    Analyzer->>Gemini: POST pruned diffs + compliance logs
-    Gemini-->>Analyzer: Return Markdown report & HCL patch variables
-    alt Policy/Security Failure Mapped
-        Analyzer->>GitHub: Open GitHub Issue (Revert instructions)
-    else Code Sync Required
-        Analyzer->>GitHub: Commit HCL changes & Open Pull Request
+graph TD
+    subgraph "Phase 1: Design (Security)"
+        A[Compliance Prompts] -->|policy_generator.py| B[policy/infra_policies.rego]
     end
+
+    subgraph "Phase 2: Review (FinOps)"
+        C[Infracost JSON] -->|cost_optimizer.py| D[FinOps Actionable Reports]
+    end
+
+    subgraph "Phase 3: Deploy (Debugging)"
+        E[Failed Deploy Logs] -->|failure_analyzer.py| F[Diagnostic Fix Blueprints]
+    end
+
+    subgraph "Phase 4: Monitor (Ops)"
+        G[Live State Drift] -->|drift_analyzer.py| H[Revert CLI / Adopt PR]
+    end
+
+    B --> C
+    D --> E
+    F --> G
 ```
 
 ---
 
-## 🛡️ OPA & compliance Integration
+## 🛠️ The AIOps Tool Suite
 
-The drift detector doesn't just look for *any* change—it focuses heavily on **governance violations**. When a drift is detected, it is cross-referenced with your rules in `policy/infra_policies.rego`.
+All AI helper scripts reside in the top-level **[aiops/](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/)** directory and are built using Python's standard libraries to run out-of-the-box without external pip packages:
 
-For example, if a developer manually alters a SQL Server firewall setting:
-1. **The Drift**: `public_network_access_enabled: false` ➔ `true`.
-2. **The Policy Violation**: OPA Rule #3 fails: `SQL Server must use private endpoints. Public access is disabled.`
-3. **AI Interpretation**: The Gemini model correlates these inputs and reports:
-   - **Risk Level**: 🔴 Critical
-   - **Technical Explanation**: Explains that enabling public access bypasses private links, exposing database ports to direct internet routing.
-   - **Actionable Revert**: Produces the exact CLI script (`az sql server update ...`) to disable public access.
+### 1. Drift Analyzer (`aiops/drift_analyzer.py`)
+* **Objective**: Analyzes Terraform plan diff JSONs and OPA test reports to output plain-English reviews.
+* **Outputs**: Generates a warning report detailing resource changes, associated policy failures, and dual-remediation actions:
+  * **Revert**: Azure CLI commands to restore cloud configurations.
+  * **Adopt**: HCL code blocks to synchronize variables back into Git.
 
----
+### 2. FinOps Cost Optimizer (`aiops/cost_optimizer.py`)
+* **Objective**: Analyzes Infracost monthly cost variations on pull requests.
+* **Outputs**: Generates resource cost increases and advises on optimization practices for dev/non-production environments (e.g. downgrading to burstable VMs or disabling SQL Zone Redundancy), providing variables diffs.
 
-## 💻 Local Pre-Deployment Auditing
+### 3. Deploy Failure Analyzer (`aiops/failure_analyzer.py`)
+* **Objective**: Automatically runs if a deployment/plan fails in CI/CD, parsing raw error log streams.
+* **Outputs**: Translates cryptic cloud API failures (e.g., OIDC auth issues, Key Vault locks, Azure regional CPU quota limits) into readable diagnostics and creates immediate resolution commands.
 
-Developers can run this pipeline locally to audit their code configurations or verify manual changes before submitting pull requests.
-
-### Prerequisite: Set Gemini API Key
-Generate an API key from Google AI Studio and configure your terminal environment:
-* **PowerShell**: `$env:GEMINI_API_KEY="your-api-key"`
-* **Bash/Linux**: `export GEMINI_API_KEY="your-api-key"`
-
-### Step 1: Run the Plan
-Run Terragrunt and export the comparison output to JSON:
-```bash
-cd environments/dev
-terragrunt run-all plan -out=tfplan.binary
-terragrunt show -json tfplan.binary > tfplan.json
-```
-
-### Step 2: Evaluate OPA Policies
-Validate the plan against the OPA rules folder and output the results to JSON:
-```bash
-conftest test tfplan.json --policy ../../policy/ --output json > policy_report.json
-```
-
-### Step 3: Run the AI Analyzer
-Invoke the Python script to produce a local audit review report:
-```bash
-python ../../aiops/drift_analyzer.py \
-  --plan tfplan.json \
-  --policy-report policy_report.json \
-  --output my_audit_report.md
-```
-Open `my_audit_report.md` to see the complete SecOps evaluation.
+### 4. OPA Policy Generator (`aiops/policy_generator.py`)
+* **Objective**: Helps security engineers onboard new rules without needing to write OPA Rego code manually.
+* **Outputs**: Reads existing rego files to match style imports, and generates compliant OPA Rego deny rule blocks based on plain-English requests.
 
 ---
 
-## 🚀 Production Pipeline Guidelines
+## 💻 Running Local Demos & Pre-Deployment Auditing
 
-For active enterprise environments, the system runs inside [.github/workflows/drift-detector.yml](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/.github/workflows/drift-detector.yml) and relies on these best practices:
+Set up your Gemini API Key in your terminal:
+* **PowerShell**: `$env:GEMINI_API_KEY="your-key-here"`
+* **Bash/Linux**: `export GEMINI_API_KEY="your-key-here"`
 
-### 1. Secretless Authentication (Azure OIDC)
-The live workflow utilizes **OpenID Connect (OIDC)** to federate GitHub Actions with your Azure Active Directory tenant. This avoids the need to store long-lived service principal client secrets in GitHub. 
-Ensure the following variables are configured in repository secrets:
-- `AZURE_CLIENT_ID`
-- `AZURE_TENANT_ID`
-- `AZURE_SUBSCRIPTION_ID`
+### Run local dry-runs on mock data (No Azure account required):
+```bash
+# 1. Test Drift Detection
+python aiops/drift_analyzer.py --demo
 
-### 2. Triage Workflows
-When drift is detected, the operations team should follow these guidelines to resolve it:
-* **Option A: Revert (Recommended for Security Breaches)**
-  - Open the generated GitHub Issue.
-  - Review the AI-generated Azure CLI command under the **Revert Action** section.
-  - Copy and run the command in your cloud console/terminal to restore alignment with Git.
-* **Option B: Adopt (Recommended for Planned Scaling/Upgrades)**
-  - Find the automated Pull Request opened by the bot (labeled `drift-adoption`).
-  - Review the proposed variables updates.
-  - Merge the PR to adopt the live changes back into your Git repository.
+# 2. Test Cost Optimization
+python aiops/cost_optimizer.py --demo
+
+# 3. Test Failure Diagnostics
+python aiops/failure_analyzer.py --demo
+
+# 4. Test OPA Policy Generation
+python aiops/policy_generator.py --prompt "Ensure Storage Account HTTPS traffic only" --demo
+```
+
+---
+
+## 🚀 CI/CD Pipeline Integrations
+
+The AIOps suite is integrated into your GitHub Action pipelines:
+
+1. **Pull Requests (`terragrunt.yml`)**:
+   - Executes `cost_optimizer.py` on Infracost JSON outputs, posting FinOps review summaries as comments directly on the PR.
+   - If the Plan stage encounters errors, triggers `failure_analyzer.py` on the output log and prints the troubleshooting recommendations as a PR comment.
+2. **Nightly Audits (`drift-detector.yml`)**:
+   - Performs a daily live state comparison against Azure using secretless OIDC authentication.
+   - Converts the plan to JSON, executes OPA validation, and uses `drift_analyzer.py` to:
+     * Open a **GitHub Issue** detailing policy violations and revert commands.
+     * Open an automated **Adoption PR** containing the variables changes.
+3. **Operational Sandbox (`ai-drift-demo.yml`)**:
+   - An offline demo workflow that runs all four tools in dry-run/mock mode, compiling and rendering all Markdown reports directly to the **GitHub Actions Job Summary** dashboard.

@@ -28,40 +28,68 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # If GEMINI_API_KEY secret is configured, run live, otherwise run in demo mode
           if [ -n "$GEMINI_API_KEY" ]; then
-            echo "GEMINI_API_KEY secret is set! Executing live LLM query..."
             python aiops/drift_analyzer.py \
               --plan aiops/mock_data/mock_tfplan.json \
               --policy-report aiops/mock_data/mock_opa_report.json \
               --output drift_report.md \
               --output-hcl-patch hcl_patch.hcl
           else
-            echo "GEMINI_API_KEY not set. Running in offline demo mode..."
             python aiops/drift_analyzer.py --demo --output drift_report.md --output-hcl-patch hcl_patch.hcl
           fi
 
-      - name: 'Publish AI Report to Job Summary'
+      - name: 'Execute AI Cost Optimizer (FinOps)'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          cat drift_report.md >> $GITHUB_STEP_SUMMARY
+          if [ -n "$GEMINI_API_KEY" ]; then
+            python aiops/cost_optimizer.py \
+              --infracost-json aiops/mock_data/mock_infracost.json \
+              --output cost_report.md
+          else
+            python aiops/cost_optimizer.py --demo --output cost_report.md
+          fi
 
-      - name: 'Upload Artifacts'
+      - name: 'Execute AI Failure Diagnostics'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -n "$GEMINI_API_KEY" ]; then
+            python aiops/failure_analyzer.py \
+              --error-log aiops/mock_data/failed_deploy.log \
+              --output failure_report.md
+          else
+            python aiops/failure_analyzer.py --demo --output failure_report.md
+          fi
+
+      - name: 'Execute AI OPA Policy Generator Demo'
+        run: |
+          python aiops/policy_generator.py \
+            --prompt "Ensure Storage Account HTTPS traffic only" \
+            --demo
+
+      - name: 'Publish AI Suite Reports to Job Summary'
+        run: |
+          echo "# 🤖 Unified AIOps Lifecycle Suite Audit" >> $GITHUB_STEP_SUMMARY
+          echo "This dashboard showcases the automated AI assistance suite running through all IaC lifecycle phases." >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 1. 🔍 Drift & Compliance Audit (Monitoring Phase)" >> $GITHUB_STEP_SUMMARY
+          cat drift_report.md >> $GITHUB_STEP_SUMMARY
+          echo -e "\n---\n" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 2. 💰 FinOps Cost Optimization (Review Phase)" >> $GITHUB_STEP_SUMMARY
+          cat cost_report.md >> $GITHUB_STEP_SUMMARY
+          echo -e "\n---\n" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 3. 🚨 Deployment Failure Diagnostics (Debugging Phase)" >> $GITHUB_STEP_SUMMARY
+          cat failure_report.md >> $GITHUB_STEP_SUMMARY
+
+      - name: 'Upload Audit Artifacts'
         uses: actions/upload-artifact@v4
         with:
-          name: ai-drift-audit-report
+          name: aiops-lifecycle-suite-reports
           path: |
             drift_report.md
+            cost_report.md
+            failure_report.md
             hcl_patch.hcl
-
-      # Demonstrates how the system would simulate creating issues/PRs
-      - name: 'Simulate Operational Routing'
-        run: |
-          echo "============================================="
-          echo "Simulating Devops Remediation Pipelines:"
-          echo "============================================="
-          echo "1. Security & Compliance violations mapped to OPA Rules."
-          echo "   Action: Opening GitHub Issue with Revert commands..."
-          echo "2. Infrastructure variables update (HCL adoption)."
-          echo "   Action: Opening PR with local codebase modifications..."
-          echo "============================================="
-          echo "Remediation Simulation Complete."

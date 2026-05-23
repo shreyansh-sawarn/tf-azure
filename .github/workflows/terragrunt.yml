@@ -84,6 +84,39 @@ jobs:
                                    --pull-request ${{ github.event.pull_request.number }} \
                                    --behavior update
 
+      - name: 'Setup Python'
+        if: github.event_name == 'pull_request'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 'Run AI FinOps Review'
+        if: github.event_name == 'pull_request'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -n "$GEMINI_API_KEY" ]; then
+            python aiops/cost_optimizer.py --infracost-json /tmp/infracost.json --output /tmp/cost_report.md
+          else
+            echo "GEMINI_API_KEY not configured, skipping AI FinOps review."
+          fi
+
+      - name: 'Post AI Cost Optimizer Comment'
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('/tmp/cost_report.md')) return;
+            const report = fs.readFileSync('/tmp/cost_report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            })
+
   plan:
     name: 'Terragrunt Plan'
     runs-on: ubuntu-latest
@@ -133,6 +166,40 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
+            })
+
+      - name: 'Setup Python'
+        if: github.event_name == 'pull_request'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 'Run AI Failure Diagnostics'
+        if: github.event_name == 'pull_request'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if grep -q "Error:" /tmp/plan.txt && [ -n "$GEMINI_API_KEY" ]; then
+            echo "Plan errors found! Generating diagnostics report..."
+            python aiops/failure_analyzer.py --error-log /tmp/plan.txt --output /tmp/failure_report.md
+          else
+            echo "No plan errors found or GEMINI_API_KEY missing."
+          fi
+
+      - name: 'Post AI Failure Comment'
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('/tmp/failure_report.md')) return;
+            const report = fs.readFileSync('/tmp/failure_report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
             })
 
       - name: 'Policy Check (Conftest)'

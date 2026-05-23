@@ -1,0 +1,59 @@
+{
+  "version": "0.2",
+  "totalMonthlyCost": "165.10",
+  "pastTotalMonthlyCost": "4.90",
+  "diffTotalMonthlyCost": "160.20",
+  "projects": [
+    {
+      "name": "environments/dev",
+      "breakdown": {
+        "resources": [
+          {
+            "name": "module.database.azurerm_mssql_database.dev_db",
+            "monthlyCost": "14.72",
+            "costComponents": [
+              {
+                "name": "Database usage (S0, Zone Redundant)",
+                "monthlyCost": "14.72"
+              }
+            ]
+          },
+          {
+            "name": "module.compute.azurerm_linux_virtual_machine.dev_vm",
+            "monthlyCost": "150.38",
+            "costComponents": [
+              {
+                "name": "Instance (Standard_D4s_v3)",
+                "monthlyCost": "150.38"
+              }
+            ]
+          }
+        ]
+      },
+      "diff": {
+        "resources": [
+          {
+            "name": "module.database.azurerm_mssql_database.dev_db",
+            "monthlyCost": "14.72",
+            "costComponents": [
+              {
+                "name": "Database usage (S0, Zone Redundant)",
+                "monthlyCost": "14.72"
+              }
+            ]
+          },
+          {
+            "name": "module.compute.azurerm_linux_virtual_machine.dev_vm",
+            "monthlyCost": "150.38",
+            "costComponents": [
+              {
+                "name": "Instance (Standard_D4s_v3)",
+                "monthlyCost": "150.38"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

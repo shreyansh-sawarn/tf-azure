@@ -15,7 +15,7 @@ import urllib.request
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_MOCK_PLAN = os.path.join(SCRIPT_DIR, "mock_data", "mock_tfplan.json")
 DEFAULT_MOCK_OPA = os.path.join(SCRIPT_DIR, "mock_data", "mock_opa_report.json")
-DEFAULT_EXPECTED_OUT = os.path.join(SCRIPT_DIR, "expected_output.md")
+DEFAULT_EXPECTED_OUT = os.path.join(SCRIPT_DIR, "expected_reports", "expected_drift_report.md")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="AI IaC Drift Analyzer")

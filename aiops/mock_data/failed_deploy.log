@@ -1,0 +1,11 @@
+[terragrunt] [environments/dev/compute] 2026/05/23 16:32:00 Running command: terraform apply -auto-approve tfplan.binary
+module.compute.azurerm_linux_virtual_machine.dev_vm: Creating...
+╷
+│ Error: creating Linux Virtual Machine "dev-vm" (Resource Group "tf-azure-dev-rg"): compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=409 -- Original Error: autorest/azure: Service returned an error. StatusCode=409 Message="Operation results in exceeding quota limits of Core. Maximum allowed: 10, Current in use: 8, Additional requested: 4. Please read more about quota limits at https://docs.microsoft.com/en-us/azure/azure-portal/support-request or request a quota increase." Details=[{"code":"QuotasExceeded","message":"Operation results in exceeding quota limits of Core. Maximum allowed: 10, Current in use: 8, Additional requested: 4. Family: standardDSv2Family."}]
+│ 
+│   with module.compute.azurerm_linux_virtual_machine.dev_vm,
+│   on modules/compute/linux_vm/main.tf line 45, in resource "azurerm_linux_virtual_machine" "vm":
+│   45: resource "azurerm_linux_virtual_machine" "vm" {
+│ 
+╵
+[terragrunt] 2026/05/23 16:32:04 tmp/dev/compute/terragrunt.hcl:123: terraform apply failed with exit status 1
