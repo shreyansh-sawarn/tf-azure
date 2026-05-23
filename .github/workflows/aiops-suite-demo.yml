@@ -80,6 +80,18 @@ jobs:
             python aiops/security_reviewer.py --demo --output security_report.md
           fi
 
+      - name: 'Execute AI Unit Test Generator'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -n "$GEMINI_API_KEY" ]; then
+            python aiops/test_generator.py \
+              --variables-file aiops/mock_data/mock_variables.tf \
+              --output generated.tftest.hcl
+          else
+            python aiops/test_generator.py --demo --output generated.tftest.hcl
+          fi
+
       - name: 'Publish AI Suite Reports to Job Summary'
         run: |
           echo "# 🤖 Unified AIOps Lifecycle Suite Audit" >> $GITHUB_STEP_SUMMARY
@@ -99,6 +111,12 @@ jobs:
           
           echo "## 4. 🛡️ Security Threat Modeling (Architecture Phase)" >> $GITHUB_STEP_SUMMARY
           cat security_report.md >> $GITHUB_STEP_SUMMARY
+          echo -e "\n---\n" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 5. 🧪 Automated Test Generation (Development Phase)" >> $GITHUB_STEP_SUMMARY
+          echo '```hcl' >> $GITHUB_STEP_SUMMARY
+          cat generated.tftest.hcl >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: 'Upload Audit Artifacts'
         uses: actions/upload-artifact@v4
@@ -109,4 +127,5 @@ jobs:
             cost_report.md
             failure_report.md
             security_report.md
+            generated.tftest.hcl
             hcl_patch.hcl

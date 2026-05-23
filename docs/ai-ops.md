@@ -8,11 +8,12 @@ This document provides a deep dive into the architecture, design, and operations
 
 Traditional Infrastructure as Code (IaC) loops are passive—they deploy static configurations but require heavy manual intervention when things go wrong, when costs spike, or when configuration drift occurs.
 
-To build an enterprise-ready pipeline, this repository integrates a **closed-loop AI Operations Lifecycle** that actively assists engineers across four critical phases:
-1. **Compliance Policy Generation (Design Phase)**: Translates security compliance guidelines into OPA rules.
-2. **FinOps Cost Optimization (Review Phase)**: Analyzes Infracost differentials and proposes capacity scaling cost-cutting patches.
-3. **Deployment Failure Diagnostics (Debugging Phase)**: Ingests API trace errors and generates resolutions.
-4. **Drift Remediation (Monitoring Phase)**: Audits live resources against Git configurations and writes revert/adoption code.
+To build an enterprise-ready pipeline, this repository integrates a **closed-loop AI Operations Lifecycle** that actively assists engineers across five critical phases:
+1. **Automated Test Generation (Development Phase)**: Ingests Terraform variable definitions to automatically generate native `.tftest.hcl` assertions with mock providers.
+2. **Compliance Policy Generation (Design Phase)**: Translates security compliance guidelines into OPA rules.
+3. **FinOps Cost Optimization (Review Phase)**: Analyzes Infracost differentials and proposes capacity scaling cost-cutting patches.
+4. **Deployment Failure Diagnostics (Debugging Phase)**: Ingests API trace errors and generates resolutions.
+5. **Drift Remediation (Monitoring Phase)**: Audits live resources against Git configurations and writes revert/adoption code.
 
 ---
 
@@ -20,6 +21,10 @@ To build an enterprise-ready pipeline, this repository integrates a **closed-loo
 
 ```mermaid
 graph TD
+    subgraph "Phase 5: Development (Testing)"
+        I[Variable Definitions] -->|test_generator.py| J[generated.tftest.hcl]
+    end
+
     subgraph "Phase 1: Design (Security)"
         A[Compliance Prompts] -->|policy_generator.py| B[policy/infra_policies.rego]
     end
@@ -36,9 +41,11 @@ graph TD
         G[Live State Drift] -->|drift_analyzer.py| H[Revert CLI / Adopt PR]
     end
 
+    J --> A
     B --> C
     D --> E
     F --> G
+    H --> I
 ```
 
 ---
@@ -65,6 +72,10 @@ All AI helper scripts reside in the top-level **[aiops/](file:///C:/Users/shrey/
 * **Objective**: Helps security engineers onboard new rules without needing to write OPA Rego code manually.
 * **Outputs**: Reads existing rego files to match style imports, and generates compliant OPA Rego deny rule blocks based on plain-English requests.
 
+### 5. AI Unit Test Generator (`aiops/test_generator.py`)
+* **Objective**: Automatically generates native Terraform test blocks (`.tftest.hcl`) by parsing variables HCL files.
+* **Outputs**: Generates a `.tftest.hcl` script containing mock providers and compliance assertion blocks validating input variables (e.g. enforcing VM tier compliance or password logins disabled).
+
 ---
 
 ## 💻 Running Local Demos & Pre-Deployment Auditing
@@ -86,6 +97,12 @@ python aiops/failure_analyzer.py --demo
 
 # 4. Test OPA Policy Generation
 python aiops/policy_generator.py --prompt "Ensure Storage Account HTTPS traffic only" --demo
+
+# 5. Test AI Unit Test Generation (Single File)
+python aiops/test_generator.py --demo
+
+# 6. Test AI Unit Test Generation (Batch Scanner)
+python aiops/test_generator.py --scan-modules --demo
 ```
 
 ---
@@ -103,4 +120,4 @@ The AIOps suite is integrated into your GitHub Action pipelines:
      * Open a **GitHub Issue** detailing policy violations and revert commands.
      * Open an automated **Adoption PR** containing the variables changes.
 3. **Operational Sandbox (`aiops-suite-demo.yml`)**:
-   - An offline demo workflow that runs all four tools in dry-run/mock mode, compiling and rendering all Markdown reports directly to the **GitHub Actions Job Summary** dashboard.
+   - An offline demo workflow that runs the complete tool suite in dry-run/mock mode, compiling and rendering all Markdown reviews and generated HCL unit test cases directly to the **GitHub Actions Job Summary** dashboard.

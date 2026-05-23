@@ -34,3 +34,4 @@ hcl_patch.hcl
 *tfplan.json
 *tfplan.binary
 *policy_report.json
+generated.tftest.hcl

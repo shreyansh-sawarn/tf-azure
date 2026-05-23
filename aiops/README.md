@@ -27,12 +27,17 @@ All AI assets are self-contained within this directory:
   * **[cost_optimizer.py](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/cost_optimizer.py)**: Advisor for Infracost differentials.
   * **[failure_analyzer.py](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/failure_analyzer.py)**: Diagnostics for failed apply logs.
   * **[policy_generator.py](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/policy_generator.py)**: CLI generator of OPA Rego rules.
+  * **[security_reviewer.py](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/security_reviewer.py)**: STRIDE security reviewer for planned resources.
+  * **[copilot.py](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/copilot.py)**: Interactive conversational CLI copilot.
+  * **[test_generator.py](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/test_generator.py)**: AI-driven native Terraform test suite generator.
 * **[mock_data/](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/mock_data)**: Sub-folder containing raw input data:
   * **mock_tfplan.json** / **mock_opa_report.json**: Ingests for drift auditing.
   * **mock_infracost.json**: Ingest for cost optimization.
   * **failed_deploy.log**: Ingest for failure diagnostics.
-* **[expected_reports/](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/expected_reports)**: Sub-folder containing pre-cached Markdown audit summaries for dry-runs and offline fallbacks:
-  * **expected_drift_report.md** / **expected_cost_report.md** / **expected_failure_report.md**
+  * **mock_variables.tf**: Input variable definitions for test generation.
+* **[expected_reports/](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/aiops/expected_reports)**: Sub-folder containing pre-cached summaries and expected files:
+  * **expected_drift_report.md** / **expected_cost_report.md** / **expected_failure_report.md** / **expected_security_report.md**
+  * **expected_tftest.hcl**: Pre-cached compliance unit tests.
 
 ---
 
@@ -57,6 +62,12 @@ python aiops/security_reviewer.py --demo
 
 # 5) Interactive Copilot Demo (simulated step-through conversation)
 python aiops/copilot.py --demo
+
+# 6) AI Unit Test Generator Demo (generates generated.tftest.hcl)
+python aiops/test_generator.py --demo
+
+# 7) AI Unit Test Batch Scanner Demo (scans modules/ and generates tests)
+python aiops/test_generator.py --scan-modules --demo
 ```
 This writes local `.md` report files to your workspace for review.
 
@@ -94,6 +105,14 @@ python aiops/security_reviewer.py `
 
 # 6) Live Interactive Repository Copilot
 python aiops/copilot.py
+
+# 7) Live AI Unit Test Generator
+python aiops/test_generator.py `
+  --variables-file aiops/mock_data/mock_variables.tf `
+  --output generated.tftest.hcl
+
+# 8) Live AI Unit Test Batch Scanner (automatically generates test suites for all modules)
+python aiops/test_generator.py --scan-modules
 ```
 
 ---
