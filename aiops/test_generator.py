@@ -22,6 +22,7 @@ def parse_args():
     parser.add_argument("--output", help="Path to write the tftest.hcl output file", default="generated.tftest.hcl")
     parser.add_argument("--demo", action="store_true", help="Run in offline demo mode using pre-cached responses")
     parser.add_argument("--scan-modules", action="store_true", help="Scan the modules/ directory and generate unit.tftest.hcl files for each module")
+    parser.add_argument("--force", action="store_true", help="Force overwrite of existing test files if they already exist")
     return parser.parse_args()
 
 def read_hcl_file(file_path):
@@ -85,6 +86,11 @@ def scan_and_generate_modules(args, api_key):
             tests_dir = os.path.join(mod_path, "tests")
             output_file = os.path.join(tests_dir, "unit.tftest.hcl")
             
+            # Check for existing test file to prevent overwriting manual work
+            if os.path.exists(output_file) and not args.force:
+                print(f"⚠️  Skipping module '{subdir}': '{output_file}' already exists. Use --force to overwrite.")
+                continue
+
             print(f"📦 Found module '{subdir}' with variables.tf")
             
             # Ensure tests directory exists
@@ -202,6 +208,11 @@ def main():
             args.demo = True
         scan_and_generate_modules(args, api_key)
         return
+
+    # Check for existing single output file to prevent overwriting manual work
+    if os.path.exists(args.output) and not args.force:
+        sys.stderr.write(f"Error: Output file '{args.output}' already exists. Use --force to overwrite.\n")
+        sys.exit(1)
 
     # 1. Check for Demo mode
     if args.demo:

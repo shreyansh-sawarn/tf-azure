@@ -115,6 +115,14 @@ python aiops/test_generator.py `
 python aiops/test_generator.py --scan-modules
 ```
 
+### 🛡️ Test Generator Safety Guardrails
+To protect hand-written test files or customized configurations from being accidentally overwritten by automatic AI test generation, the generator includes the following safety features:
+- **Automatic Skip**: If a test file (`unit.tftest.hcl` or the target output path) already exists, the script will print a warning and skip that module.
+- **Force Overwrite**: If you explicitly want the script to regenerate and overwrite existing test configurations, append the `--force` flag:
+  ```powershell
+  python aiops/test_generator.py --scan-modules --force
+  ```
+
 ---
 
 ## 🛠️ Production CI/CD Deployment

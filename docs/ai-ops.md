@@ -74,6 +74,7 @@ All AI helper scripts reside in the top-level **[aiops/](file:///C:/Users/shrey/
 
 ### 5. AI Unit Test Generator (`aiops/test_generator.py`)
 * **Objective**: Automatically generates native Terraform test blocks (`.tftest.hcl`) by parsing variables HCL files.
+* **Safety Guardrails**: Automatically detects and skips existing test configurations (e.g. `unit.tftest.hcl`) to protect developer changes. Must explicitly pass the `--force` CLI flag to force overwrite.
 * **Outputs**: Generates a `.tftest.hcl` script containing mock providers and compliance assertion blocks validating input variables (e.g. enforcing VM tier compliance or password logins disabled).
 
 ---
