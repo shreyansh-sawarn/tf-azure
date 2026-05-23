@@ -97,10 +97,10 @@ The AIOps suite is integrated into your GitHub Action pipelines:
 1. **Pull Requests (`terragrunt.yml`)**:
    - Executes `cost_optimizer.py` on Infracost JSON outputs, posting FinOps review summaries as comments directly on the PR.
    - If the Plan stage encounters errors, triggers `failure_analyzer.py` on the output log and prints the troubleshooting recommendations as a PR comment.
-2. **Nightly Audits (`drift-detector.yml`)**:
+2. **Nightly Audits (`aiops-live-audit.yml`)**:
    - Performs a daily live state comparison against Azure using secretless OIDC authentication.
    - Converts the plan to JSON, executes OPA validation, and uses `drift_analyzer.py` to:
      * Open a **GitHub Issue** detailing policy violations and revert commands.
      * Open an automated **Adoption PR** containing the variables changes.
-3. **Operational Sandbox (`ai-drift-demo.yml`)**:
+3. **Operational Sandbox (`aiops-suite-demo.yml`)**:
    - An offline demo workflow that runs all four tools in dry-run/mock mode, compiling and rendering all Markdown reports directly to the **GitHub Actions Job Summary** dashboard.

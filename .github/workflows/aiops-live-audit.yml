@@ -1,4 +1,4 @@
-name: 'IaC Live Drift Detection & AI Review'
+name: 'AIOps Live Compliance & Drift Audit'
 
 on:
   schedule:

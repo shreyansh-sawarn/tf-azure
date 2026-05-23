@@ -41,11 +41,24 @@ All AI assets are self-contained within this directory:
 The analyzer script is built using Python's standard libraries so it requires **zero external dependencies (no pip install required)** and is fully compatible with Windows, macOS, and Linux.
 
 ### Option 1: Zero-Config Offline Demo (No API Key Required)
-Run the script with the `--demo` flag. It reads the mock data and generates the report using the cached expected response:
+Run any of the tools with the `--demo` flag to execute locally using cached expected reports (no Azure login or LLM credentials required):
 ```powershell
+# 1) Drift & Compliance Audit Demo (generates drift_report.md)
 python aiops/drift_analyzer.py --demo
+
+# 2) FinOps Cost Optimizer Demo (generates cost_report.md)
+python aiops/cost_optimizer.py --demo
+
+# 3) Deployment Diagnostics Demo (generates failure_report.md)
+python aiops/failure_analyzer.py --demo
+
+# 4) Security Threat Modeling Demo (generates security_review.md)
+python aiops/security_reviewer.py --demo
+
+# 5) Interactive Copilot Demo (simulated step-through conversation)
+python aiops/copilot.py --demo
 ```
-This generates the report in `drift_report.md` in your current directory.
+This writes local `.md` report files to your workspace for review.
 
 ### Option 2: Live AI Generation (Requires Gemini API Key)
 If you have a Gemini API key, you can run the live LLM analysis on the mock data:
@@ -73,6 +86,14 @@ python aiops/failure_analyzer.py `
 # 4) Live OPA Policy Generator (creates Rego rule and appends it to rules catalog)
 python aiops/policy_generator.py `
   --prompt "Ensure key vaults disable public access"
+
+# 5) Live Security Threat Reviewer
+python aiops/security_reviewer.py `
+  --plan aiops/mock_data/mock_tfplan.json `
+  --output security_report_live.md
+
+# 6) Live Interactive Repository Copilot
+python aiops/copilot.py
 ```
 
 ---
@@ -81,9 +102,9 @@ python aiops/policy_generator.py `
 
 In a production repository, this system is automated using two GitHub Actions workflows:
 
-1. **[ai-drift-demo.yml](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/.github/workflows/ai-drift-demo.yml)**:
+1. **[aiops-suite-demo.yml](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/.github/workflows/aiops-suite-demo.yml)**:
    - An offline sandbox workflow triggered via `workflow_dispatch` or PRs to demonstrate the workflow actions.
-2. **[drift-detector.yml](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/.github/workflows/drift-detector.yml)**:
+2. **[aiops-live-audit.yml](file:///C:/Users/shrey/OneDrive/Documents/Repos/tf-azure/.github/workflows/aiops-live-audit.yml)**:
    - A production workflow running on a daily schedule (`cron`).
    - Uses **Azure OIDC (OpenID Connect)** to authenticate securely without hardcoded credentials.
    - Runs live Terragrunt plans and OPA audits.

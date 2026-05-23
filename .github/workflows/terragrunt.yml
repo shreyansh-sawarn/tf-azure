@@ -202,6 +202,39 @@ jobs:
               body: report
             })
 
+      - name: 'Run AI Security Review'
+        if: github.event_name == 'pull_request'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          cd environments/dev
+          # Convert plan to binary and JSON for the security reviewer to inspect
+          terragrunt plan -out=/tmp/tfplan.binary -no-color --terragrunt-non-interactive || true
+          terragrunt show -json /tmp/tfplan.binary > /tmp/tfplan.json || true
+          
+          if [ -f /tmp/tfplan.json ] && [ -n "$GEMINI_API_KEY" ]; then
+            echo "Plan JSON found! Generating AI Security review..."
+            python ../../aiops/security_reviewer.py --plan /tmp/tfplan.json --output /tmp/security_report.md
+          else
+            echo "Skipping AI Security Review (mock environment or GEMINI_API_KEY missing)."
+          fi
+
+      - name: 'Post AI Security Comment'
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('/tmp/security_report.md')) return;
+            const report = fs.readFileSync('/tmp/security_report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            })
+
       - name: 'Policy Check (Conftest)'
         if: github.event_name == 'pull_request'
         run: |

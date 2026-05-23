@@ -1,11 +1,11 @@
-name: 'AI Drift Detection Demo'
+name: 'Unified AIOps Suite Demo'
 
 on:
   workflow_dispatch:
   pull_request:
     paths:
       - 'aiops/**'
-      - '.github/workflows/ai-drift-demo.yml'
+      - '.github/workflows/aiops-suite-demo.yml'
 
 jobs:
   ai-drift-demo:
@@ -68,6 +68,18 @@ jobs:
             --prompt "Ensure Storage Account HTTPS traffic only" \
             --demo
 
+      - name: 'Execute AI Security Reviewer'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -n "$GEMINI_API_KEY" ]; then
+            python aiops/security_reviewer.py \
+              --plan aiops/mock_data/mock_tfplan.json \
+              --output security_report.md
+          else
+            python aiops/security_reviewer.py --demo --output security_report.md
+          fi
+
       - name: 'Publish AI Suite Reports to Job Summary'
         run: |
           echo "# 🤖 Unified AIOps Lifecycle Suite Audit" >> $GITHUB_STEP_SUMMARY
@@ -83,6 +95,10 @@ jobs:
           
           echo "## 3. 🚨 Deployment Failure Diagnostics (Debugging Phase)" >> $GITHUB_STEP_SUMMARY
           cat failure_report.md >> $GITHUB_STEP_SUMMARY
+          echo -e "\n---\n" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 4. 🛡️ Security Threat Modeling (Architecture Phase)" >> $GITHUB_STEP_SUMMARY
+          cat security_report.md >> $GITHUB_STEP_SUMMARY
 
       - name: 'Upload Audit Artifacts'
         uses: actions/upload-artifact@v4
@@ -92,4 +108,5 @@ jobs:
             drift_report.md
             cost_report.md
             failure_report.md
+            security_report.md
             hcl_patch.hcl

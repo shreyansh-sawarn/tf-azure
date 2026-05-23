@@ -26,6 +26,10 @@ Thumbs.db
 
 # AI Drift Audits
 drift_report*.md
+cost_report*.md
+failure_report*.md
+security_report*.md
+security_review*.md
 hcl_patch.hcl
 *tfplan.json
 *tfplan.binary
