@@ -1,0 +1,25 @@
+[
+  {
+    "filename": "aiops/mock_data/mock_tfplan.json",
+    "namespace": "main",
+    "successes": 12,
+    "warnings": [],
+    "failures": [
+      {
+        "msg": "SQL Server module.database.azurerm_mssql_server.dev_sql has public network access enabled. Use private endpoints instead."
+      },
+      {
+        "msg": "Resource module.storage.azurerm_storage_container.temp_logs is missing mandatory 'Environment' tag"
+      },
+      {
+        "msg": "Resource module.storage.azurerm_storage_container.temp_logs is missing mandatory 'Project' tag"
+      },
+      {
+        "msg": "Storage Container module.storage.azurerm_storage_container.temp_logs must have access type 'private'"
+      },
+      {
+        "msg": "VM module.compute.azurerm_linux_virtual_machine.dev_vm has an expensive size (Standard_D4s_v3). Allowed sizes are: [Standard_B1s, Standard_B2s, Standard_DS1_v2]"
+      }
+    ]
+  }
+]

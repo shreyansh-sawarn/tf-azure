@@ -1,0 +1,135 @@
+name: 'IaC Live Drift Detection & AI Review'
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run daily at midnight UTC
+  workflow_dispatch: # Allow manual triggering
+
+# Required permissions for Azure OIDC login and writing PRs/Issues
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_USE_OIDC: true
+  TERRAGRUNT_TFPATH: terraform
+
+jobs:
+  drift-detection:
+    name: 'Audit Live Infrastructure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repo'
+        uses: actions/checkout@v4
+
+      - name: 'Azure Login (OIDC)'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 'Setup Terraform'
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.0
+
+      - name: 'Setup Terragrunt'
+        uses: autero1/action-terragrunt@v3
+        with:
+          terragrunt-version: 0.73.0
+
+      - name: 'Setup Conftest'
+        uses: princespaghetti/setup-conftest@v1
+        with:
+          version: latest
+
+      - name: 'Setup Python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 'Run Terragrunt Plan Audit'
+        id: plan_audit
+        run: |
+          cd environments/dev
+          # Run plan with detailed-exitcode (returns 0 for no changes, 2 for drift, 1 for errors)
+          # We use || [ $? -eq 2 ] to catch the drift without breaking the pipeline execution
+          terragrunt run-all plan -detailed-exitcode -out=tfplan.binary --terragrunt-non-interactive || exit_code=$?
+          
+          if [ "$exit_code" -eq 2 ]; then
+            echo "drift_detected=true" >> $GITHUB_OUTPUT
+            echo "Drift detected. Exporting binary plan to JSON..."
+            terragrunt show -json tfplan.binary > tfplan.json
+            
+            echo "Running OPA Conftest checks on plan JSON..."
+            conftest test tfplan.json --policy ../../policy/ --output json > policy_report.json || true
+          elif [ "$exit_code" -eq 0 ]; then
+             echo "drift_detected=false" >> $GITHUB_OUTPUT
+             echo "No infrastructure drift detected."
+          else
+             echo "Terragrunt plan failed with error code $exit_code."
+             exit $exit_code
+          fi
+
+      - name: 'Generate AI Remediation Report'
+        if: steps.plan_audit.outputs.drift_detected == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python aiops/drift_analyzer.py \
+            --plan environments/dev/tfplan.json \
+            --policy-report environments/dev/policy_report.json \
+            --output drift_report.md \
+            --output-hcl-patch hcl_patch.hcl
+
+      - name: 'Create GitHub Issue for Security & Compliance Violations'
+        if: steps.plan_audit.outputs.drift_detected == 'true'
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: '🚨 Live Infrastructure Drift & OPA Violations Detected'
+          content-filepath: drift_report.md
+          labels: |
+            drift-detected
+            security-audit
+            automated-alert
+
+      # Optional: Auto-create pull request to adopt variable upgrades if HCL patch generated
+      - name: 'Prepare Code Adoption PR'
+        if: steps.plan_audit.outputs.drift_detected == 'true'
+        id: prepare_pr
+        run: |
+          if [ -f hcl_patch.hcl ] && [ -s hcl_patch.hcl ]; then
+             echo "hcl_patch_exists=true" >> $GITHUB_OUTPUT
+             
+             # Example automation script to update the local terragrunt.hcl configurations 
+             # by appending or merging inputs with the generated HCL patch inputs
+             # For illustration:
+             cat hcl_patch.hcl >> environments/dev/terragrunt.hcl
+          else
+             echo "hcl_patch_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 'Create Pull Request for Code Syncing'
+        if: steps.plan_audit.outputs.drift_detected == 'true' && steps.prepare_pr.outputs.hcl_patch_exists == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'style(sync): automatically adopt live infrastructure drift variables'
+          branch: automated-drift-adoption
+          title: '🤖 [AI Auto-Adopt] Reconcile Live Infrastructure Drift'
+          body: |
+            ## 🤖 Automated Drift Adoption PR
+            This Pull Request was opened automatically because live infrastructure modifications were detected. 
+            
+            ### Proposed Changes:
+            Review the changes below and merge to adopt the live configuration variables into Git.
+            To reject this adoption, simply close this PR and run the **revert** CLI commands detailed in the corresponding drift issue report.
+          labels: |
+            drift-adoption
+            automated-pr

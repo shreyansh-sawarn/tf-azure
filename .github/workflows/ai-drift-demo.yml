@@ -1,0 +1,67 @@
+name: 'AI Drift Detection Demo'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'aiops/**'
+      - '.github/workflows/ai-drift-demo.yml'
+
+jobs:
+  ai-drift-demo:
+    name: 'AI Drift Demo Audit'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: 'Checkout Repo'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 'Execute AI Drift Analyzer'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          # If GEMINI_API_KEY secret is configured, run live, otherwise run in demo mode
+          if [ -n "$GEMINI_API_KEY" ]; then
+            echo "GEMINI_API_KEY secret is set! Executing live LLM query..."
+            python aiops/drift_analyzer.py \
+              --plan aiops/mock_data/mock_tfplan.json \
+              --policy-report aiops/mock_data/mock_opa_report.json \
+              --output drift_report.md \
+              --output-hcl-patch hcl_patch.hcl
+          else
+            echo "GEMINI_API_KEY not set. Running in offline demo mode..."
+            python aiops/drift_analyzer.py --demo --output drift_report.md --output-hcl-patch hcl_patch.hcl
+          fi
+
+      - name: 'Publish AI Report to Job Summary'
+        run: |
+          cat drift_report.md >> $GITHUB_STEP_SUMMARY
+
+      - name: 'Upload Artifacts'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-drift-audit-report
+          path: |
+            drift_report.md
+            hcl_patch.hcl
+
+      # Demonstrates how the system would simulate creating issues/PRs
+      - name: 'Simulate Operational Routing'
+        run: |
+          echo "============================================="
+          echo "Simulating Devops Remediation Pipelines:"
+          echo "============================================="
+          echo "1. Security & Compliance violations mapped to OPA Rules."
+          echo "   Action: Opening GitHub Issue with Revert commands..."
+          echo "2. Infrastructure variables update (HCL adoption)."
+          echo "   Action: Opening PR with local codebase modifications..."
+          echo "============================================="
+          echo "Remediation Simulation Complete."

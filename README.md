@@ -27,8 +27,9 @@ A comprehensive, production-ready Azure infrastructure template repository. This
   - **Database PITR:** Point-in-time recovery enabled with up to 35-day retention.
 - **🧪 Robust Validation:** 
   - **Offline Unit Testing:** Automated **Terraform Native Testing** (`.tftest.hcl`) utilizing **Mock Providers** for CI/CD validation without Azure credentials.
-  - **Automated Linting:** Integrated `terraform fmt` and `tfsec` security scanning.
+- **🤖 AI-Driven Drift Remediation:** Integrates Gemini LLM to analyze raw plan drifts, audit violations against OPA policies, and output auto-remediation scripts (revert CLI vs. adopt HCL patches).
 - **🔓 Open Source Friendly:** 100% compatible with **OpenTofu 1.6+** and Terraform 1.5+, ensuring no vendor lock-in.
+
 
 ## 🏗️ Architecture Overview
 
@@ -53,6 +54,35 @@ graph TB
     subgraph "Governance"
         OPA[OPA/Conftest Policies]
         ID[Managed Identities]
+    end
+```
+
+### 🤖 AI-Driven Drift Detection & Remediation
+
+The repository features an automated AI operations agent running in GitHub Actions:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant CRON as GitHub Actions (Cron)
+    participant TG as Terragrunt/Terraform
+    participant OPA as OPA Policy Engine
+    participant script as scripts/ai_drift_analyzer.py
+    participant LLM as Gemini API (LLM)
+    participant Git as GitHub (Issues / PRs)
+
+    CRON->>TG: run terragrunt plan -out=tfplan.binary
+    TG->>TG: Compare live Azure state with Git config
+    TG-->>CRON: Export plan to JSON (tfplan.json)
+    CRON->>OPA: Validate JSON against infra_policies.rego
+    OPA-->>CRON: Collect compliance failures
+    CRON->>script: Feed tfplan.json & policy failures
+    script->>LLM: Send structured prompt (plan + policy info)
+    LLM-->>script: Return rich MD summary + HCL patches
+    alt Drift Detected & Violation Found
+        script->>Git: Open GitHub Issue / Alert (Revert instructions)
+    else Drift Detected & Code Adoption Requested
+        script->>Git: Create branch + commit HCL changes + open PR
     end
 ```
 
@@ -81,6 +111,7 @@ To make this project as reviewer-friendly as possible, I've created specialized 
 - **💰 [Cloud Cost Estimation](./docs/cost-estimation.md)**: How we use Infracost to shift-left cost visibility.
 - **🔄 [GitOps & Workflow](./docs/gitops-workflow.md)**: Details on the PR lifecycle and environment promotion.
 - **🛠️ [Troubleshooting Guide](./docs/troubleshooting.md)**: Solutions for common IaC operational issues.
+- **🤖 [AI Operations & Drift Auditing](./docs/ai-ops.md)**: Deep dive into scheduled drift monitoring, Gemini API audits, OPA rule mappings, and automated PR remediations.
 - **❓ [Frequently Asked Questions](./docs/faq.md)**: Rationale behind tool choices and architectural patterns.
 
 ## 🌍 Environment Differentiation
@@ -110,6 +141,11 @@ To make this project as reviewer-friendly as possible, I've created specialized 
    ```bash
    cd environments/dev
    terragrunt run-all plan
+   ```
+4. **Run AI Drift Analyzer Demo (No Azure login required):**
+   ```bash
+   # Generates a local drift_report.md report from mock data
+   python aiops/drift_analyzer.py --demo
    ```
 
 ---

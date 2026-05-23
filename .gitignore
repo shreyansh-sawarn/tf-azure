@@ -23,3 +23,10 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# AI Drift Audits
+drift_report*.md
+hcl_patch.hcl
+*tfplan.json
+*tfplan.binary
+*policy_report.json
