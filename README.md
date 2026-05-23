@@ -61,8 +61,11 @@ graph TB
 
 Traditional IaC is static—but this repository integrates a **closed-loop AI Operations Lifecycle** that assists engineers across all phases of the development and operations cycle:
 
+<details>
+<summary>🔍 Click to expand AIOps Lifecycle Diagram</summary>
+
 ```mermaid
-graph TD
+graph LR
     subgraph "Phase 5: Development (Testing)"
         I[Variable Definitions] -->|test_generator.py| J[generated.tftest.hcl]
     end
@@ -90,9 +93,14 @@ graph TD
     H --> I
 ```
 
+</details>
+
 #### Scheduled Auditing & Auto-Remediation Flow
 
 The repository features an automated AI operations agent running in GitHub Actions:
+
+<details>
+<summary>📋 Click to expand Scheduled Auditing Sequence Diagram</summary>
 
 ```mermaid
 sequenceDiagram
@@ -119,8 +127,13 @@ sequenceDiagram
     end
 ```
 
+</details>
+
 #### Pull Request (PR) Code Review & Security Gate Flow
 During standard developer pull requests, the automated CI/CD pipeline triggers test verification, cost analysis, and security reviews:
+
+<details>
+<summary>📋 Click to expand PR Verification & Review Sequence Diagram</summary>
 
 ```mermaid
 sequenceDiagram
@@ -162,6 +175,8 @@ sequenceDiagram
         script->>PR: Post Diagnostic troubleshooting comment
     end
 ```
+
+</details>
 
 
 ## 📂 Project Structure
