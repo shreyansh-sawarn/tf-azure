@@ -68,6 +68,9 @@ python aiops/test_generator.py --demo
 
 # 7) AI Unit Test Batch Scanner Demo (scans modules/ and generates tests)
 python aiops/test_generator.py --scan-modules --demo
+
+# 8) AI Unit Test Specific Module Target Demo (generates tests for container_registry, requiring --force because manual tests exist)
+python aiops/test_generator.py --module container_registry --demo --force
 ```
 This writes local `.md` report files to your workspace for review.
 
@@ -113,6 +116,9 @@ python aiops/test_generator.py `
 
 # 8) Live AI Unit Test Batch Scanner (automatically generates test suites for all modules)
 python aiops/test_generator.py --scan-modules
+
+# 9) Live AI Unit Test Specific Module Target (automatically generates test suite for container_registry)
+python aiops/test_generator.py --module container_registry --force
 ```
 
 ### 🛡️ Test Generator Safety Guardrails

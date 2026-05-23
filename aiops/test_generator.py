@@ -22,6 +22,7 @@ def parse_args():
     parser.add_argument("--output", help="Path to write the tftest.hcl output file", default="generated.tftest.hcl")
     parser.add_argument("--demo", action="store_true", help="Run in offline demo mode using pre-cached responses")
     parser.add_argument("--scan-modules", action="store_true", help="Scan the modules/ directory and generate unit.tftest.hcl files for each module")
+    parser.add_argument("--module", help="Name of a specific module to generate tests for (automatically resolves paths inside modules/)")
     parser.add_argument("--force", action="store_true", help="Force overwrite of existing test files if they already exist")
     return parser.parse_args()
 
@@ -207,6 +208,123 @@ def main():
             print("💡 Hint: Set GEMINI_API_KEY to test the live API call.")
             args.demo = True
         scan_and_generate_modules(args, api_key)
+        return
+
+    # Check if a specific module name is requested (automatic paths)
+    if args.module:
+        modules_dir = os.path.abspath(os.path.join(os.path.dirname(SCRIPT_DIR), "modules"))
+        mod_path = os.path.join(modules_dir, args.module)
+        vars_file = os.path.join(mod_path, "variables.tf")
+        
+        if not os.path.exists(vars_file):
+            sys.stderr.write(f"Error: Module '{args.module}' or its 'variables.tf' does not exist under '{mod_path}'.\n")
+            sys.exit(1)
+            
+        tests_dir = os.path.join(mod_path, "tests")
+        output_file = os.path.join(tests_dir, "unit.tftest.hcl")
+        
+        # Check for existing test file to prevent overwriting manual work
+        if os.path.exists(output_file) and not args.force:
+            sys.stderr.write(f"Error: Output file '{output_file}' already exists. Use --force to overwrite.\n")
+            sys.exit(1)
+            
+        print(f"📦 Target module matched: '{args.module}'")
+        
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key and not args.demo:
+            print("⚠️  GEMINI_API_KEY environment variable not found.")
+            print("🔄 Falling back to OFFLINE DEMO mode for Test Case Generation.")
+            print("💡 Hint: Set GEMINI_API_KEY to test the live API call.")
+            args.demo = True
+            
+        try:
+            os.makedirs(tests_dir, exist_ok=True)
+        except Exception as e:
+            sys.stderr.write(f"Error creating tests directory: {str(e)}\n")
+            sys.exit(1)
+            
+        if args.demo:
+            if args.module == "compute":
+                try:
+                    with open(DEFAULT_EXPECTED_TEST, "r", encoding="utf-8") as f:
+                        content = f.read()
+                except Exception as e:
+                    sys.stderr.write(f"Error reading expected test: {str(e)}\n")
+                    sys.exit(1)
+            else:
+                content = f"""# Mock compliance tests for module: {args.module}
+# Generated in offline demo mode
+
+mock_provider "azurerm" {{}}
+
+variables {{
+  # Default test variables for {args.module}
+}}
+
+run "validate_compliance" {{
+  command = plan
+
+  assert {{
+    condition     = true
+    error_message = "Compliance policy validation placeholder for {args.module}"
+  }}
+}}
+"""
+            try:
+                with open(output_file, "w", encoding="utf-8") as out_f:
+                    out_f.write(content)
+                print(f"✅ Successfully wrote cached/mock test to {output_file}")
+            except Exception as e:
+                sys.stderr.write(f"Error writing to {output_file}: {str(e)}\n")
+                sys.exit(1)
+        else:
+            print(f"🧠 Querying Gemini for unit test case generation for '{args.module}'...")
+            try:
+                hcl_variables = read_hcl_file(vars_file)
+            except Exception as e:
+                sys.stderr.write(f"Error reading variables file: {str(e)}\n")
+                sys.exit(1)
+                
+            prompt = f"""You are an expert Terraform quality control and compliance test engineer.
+You are tasked with writing native unit test blocks (.tftest.hcl) validating that module inputs conform to security and sizing guidelines.
+
+### Variable Definitions (HCL) for Module '{args.module}':
+```hcl
+{hcl_variables}
+```
+
+Please generate the `.tftest.hcl` file. Follow these strict guidelines:
+1. Include a mock_provider block: `mock_provider "azurerm" {{}}`.
+2. Define a default variables block declaring standard test parameters.
+3. Write multiple `run` test blocks (e.g. command = plan) that evaluate the variables.
+4. For each run block, define at least one `assert` block validating input compliance.
+5. Include helpful `error_message` strings.
+6. Return ONLY the raw HCL code. Do not wrap in markdown code blocks. Start output directly with HCL comments.
+"""
+            try:
+                generated_test = call_gemini_api(api_key, prompt)
+            except Exception as e:
+                sys.stderr.write(f"Error calling Gemini API: {str(e)}\n")
+                sys.exit(1)
+                
+            clean_test = generated_test.strip()
+            if clean_test.startswith("```hcl"):
+                clean_test = clean_test[6:]
+            elif clean_test.startswith("```terraform"):
+                clean_test = clean_test[12:]
+            if clean_test.startswith("```"):
+                clean_test = clean_test[3:]
+            if clean_test.endswith("```"):
+                clean_test = clean_test[:-3]
+            clean_test = clean_test.strip()
+            
+            try:
+                with open(output_file, "w", encoding="utf-8") as out_f:
+                    out_f.write(clean_test)
+                print(f"✅ Successfully wrote live Terraform unit test block to {output_file}")
+            except Exception as e:
+                sys.stderr.write(f"Error writing to {output_file}: {str(e)}\n")
+                sys.exit(1)
         return
 
     # Check for existing single output file to prevent overwriting manual work

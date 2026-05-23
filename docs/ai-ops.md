@@ -104,6 +104,9 @@ python aiops/test_generator.py --demo
 
 # 6. Test AI Unit Test Generation (Batch Scanner)
 python aiops/test_generator.py --scan-modules --demo
+
+# 7. Test AI Unit Test Generation (Specific Module)
+python aiops/test_generator.py --module container_registry --demo --force
 ```
 
 ---
