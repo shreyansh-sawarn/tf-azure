@@ -57,7 +57,40 @@ graph TB
     end
 ```
 
-### 🤖 AI-Driven Drift Detection & Remediation
+### 🤖 Closed-Loop AIOps Lifecycle
+
+Traditional IaC is static—but this repository integrates a **closed-loop AI Operations Lifecycle** that assists engineers across all phases of the development and operations cycle:
+
+```mermaid
+graph TD
+    subgraph "Phase 5: Development (Testing)"
+        I[Variable Definitions] -->|test_generator.py| J[generated.tftest.hcl]
+    end
+
+    subgraph "Phase 1: Design (Security)"
+        A[Compliance Prompts] -->|policy_generator.py| B[policy/infra_policies.rego]
+    end
+
+    subgraph "Phase 2: Review (FinOps)"
+        C[Infracost JSON] -->|cost_optimizer.py| D[FinOps Actionable Reports]
+    end
+
+    subgraph "Phase 3: Deploy (Debugging)"
+        E[Failed Deploy Logs] -->|failure_analyzer.py| F[Diagnostic Fix Blueprints]
+    end
+
+    subgraph "Phase 4: Monitor (Ops)"
+        G[Live State Drift] -->|drift_analyzer.py| H[Revert CLI / Adopt PR]
+    end
+
+    J --> A
+    B --> C
+    D --> E
+    F --> G
+    H --> I
+```
+
+#### Scheduled Auditing & Auto-Remediation Flow
 
 The repository features an automated AI operations agent running in GitHub Actions:
 
@@ -85,6 +118,51 @@ sequenceDiagram
         script->>Git: Create branch + commit HCL changes + open PR
     end
 ```
+
+#### Pull Request (PR) Code Review & Security Gate Flow
+During standard developer pull requests, the automated CI/CD pipeline triggers test verification, cost analysis, and security reviews:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Dev as Developer
+    participant Git as GitHub (PR Pipeline)
+    participant TG as Terragrunt / Terraform
+    participant UT as Native Unit Tests (.tftest.hcl)
+    participant script as aiops/ scripts
+    participant LLM as Gemini API (LLM)
+    participant PR as Pull Request (Comments)
+
+    Dev->>Git: Open Pull Request / Push Commit
+    Git->>TG: run terragrunt plan
+    Git->>UT: run terraform test (Verify OPA mock compliance)
+    
+    alt Test Failure or Compliance Violation
+        UT-->>Git: Report build failure
+    else Build Passes
+        TG-->>Git: Export plan & cost JSONs
+        
+        par FinOps Cost Analysis
+            Git->>script: Feed infracost.json to cost_optimizer.py
+            script->>LLM: Send cost prompt
+            LLM-->>script: Return cost optimization review
+            script->>PR: Post FinOps review comment
+        and Security Threat Review
+            Git->>script: Feed tfplan.json to security_reviewer.py
+            script->>LLM: Send STRIDE security prompt
+            LLM-->>script: Return STRIDE security report
+            script->>PR: Post Security review comment
+        end
+    end
+
+    alt Deploy / Apply Stage Fails (Later in pipeline)
+        Git->>script: Feed failed logs to failure_analyzer.py
+        script->>LLM: Send error log prompt
+        LLM-->>script: Return diagnostic resolution blueprint
+        script->>PR: Post Diagnostic troubleshooting comment
+    end
+```
+
 
 ## 📂 Project Structure
 
