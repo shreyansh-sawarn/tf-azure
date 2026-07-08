@@ -46,7 +46,7 @@ jobs:
           # Fails the build on HIGH/CRITICAL findings; soft_fail was removed so this scan
           # actually gates merges instead of only reporting.
           soft_fail: false
-          tfsec_args: --minimum-severity HIGH
+          additional_args: --minimum-severity HIGH
 
       - name: 'Terraform Native Test'
         run: |
