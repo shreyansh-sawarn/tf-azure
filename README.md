@@ -8,15 +8,16 @@
 [![Last Commit](https://img.shields.io/github/last-commit/shreyansh-sawarn/tf-azure)](https://github.com/shreyansh-sawarn/tf-azure/commits/main)
 [![Top Language](https://img.shields.io/github/languages/top/shreyansh-sawarn/tf-azure)](https://github.com/shreyansh-sawarn/tf-azure)
 
-A comprehensive, production-ready Azure infrastructure template repository. This project demonstrates high-level cloud architecture, implementing **Security by Design**, **Disaster Recovery**, and **Proactive Observability** using **Terragrunt** and **Terraform/OpenTofu**.
+A modular Azure infrastructure template repository built around **Terragrunt** and **Terraform/OpenTofu**: 30 reusable modules, native `terraform test` coverage on every one of them, and a CI pipeline that formats, lints, security-scans, and policy-checks every pull request. Built as a solo engineering-practice project — see [Honest Notes](#-honest-notes) below for what's real infra-grade vs. still evolving.
 
 ## 🚀 Key Features
 
 - **🏗️ Grouped Stacks Architecture:** Optimized Terragrunt structure that groups related resources into logical services (Foundation, Networking, Compute, Data, etc.) for better operational manageability.
-- **🛡️ Advanced Security & Governance:** 
-  - **Policy-as-Code:** 8+ production-grade **OPA (Open Policy Agent)** rules enforcing TLS 1.2, private-only storage, and mandatory tagging.
-  - **Secretless Auth:** Sophisticated IAM patterns using **User-Assigned Managed Identities** and Granular RBAC.
+- **🛡️ Security & Governance:**
+  - **Policy-as-Code:** 8 **OPA (Open Policy Agent)** rules enforcing TLS 1.2, private-only storage, and mandatory tagging, evaluated against real plan output in CI once Azure credentials are configured (see `.github/workflows/terragrunt.yml`).
+  - **Secretless Auth:** IAM patterns using **User-Assigned Managed Identities** and Granular RBAC.
   - **Layer 7 Protection:** **Application Gateway with WAF (OWASP)** and **Azure Firewall** integrated via forced tunneling (UDR).
+  - **Secure-by-default modules:** e.g. the `vnet` module ships with zero Network Security Group rules by default — you opt into rules explicitly rather than inheriting a permissive default.
 - **📈 High Availability & Elasticity:** 
   - **Kubernetes (AKS):** Managed **Azure Kubernetes Service** with **Azure CNI**, **Workload Identity**, and **Auto-Scaling** node pools.
   - **Auto-Scaling:** Virtual Machine Scale Sets (VMSS) with CPU-based scaling.
@@ -25,11 +26,12 @@ A comprehensive, production-ready Azure infrastructure template repository. This
 - **🔄 Disaster Recovery:** 
   - **Recovery Services Vault:** Automated VM backup policies and soft-delete protection.
   - **Database PITR:** Point-in-time recovery enabled with up to 35-day retention.
-- **🧪 Robust Validation:** 
-  - **Offline Unit Testing:** Automated **Terraform Native Testing** (`.tftest.hcl`) utilizing **Mock Providers** for CI/CD validation without Azure credentials.
-- **🤖 Unified AIOps Lifecycle Suite:** An offline-capable AI operations suite leveraging Gemini 2.5 to assist in all IaC phases: OPA policy generation (Design), STRIDE threat modeling (Security Review), FinOps cost optimization (Review), deployment troubleshooting (Debugging), and automated test-suite generation (Development).
+- **🧪 Testing:**
+  - Every one of the 30 modules has a native **Terraform Test** (`.tftest.hcl`) using **Mock Providers**, run in CI on every push/PR with no Azure credentials required.
+  - Key modules also include negative-path tests (`expect_failures`) and apply-mode tests that exercise computed outputs, not just plan-time values.
 - **🔓 Open Source Friendly:** 100% compatible with **OpenTofu 1.6+** and Terraform 1.5+, ensuring no vendor lock-in.
 
+An experimental AI-assisted operations layer also lives in [`aiops/`](#-ai-assisted-operations-suite-experimental) — see that section for what it actually does today.
 
 ## 🏗️ Architecture Overview
 
@@ -56,103 +58,6 @@ graph TB
         ID[Managed Identities]
     end
 ```
-
-### 🤖 Closed-Loop AIOps Lifecycle
-
-Traditional IaC is static—but this repository integrates a **closed-loop AI Operations Lifecycle** that assists engineers across all phases of the development and operations cycle:
-
-```mermaid
-graph LR
-    Dev["💻 1. Development<br/>(test_generator.py)"] --> Design["🛡️ 2. Design<br/>(policy_generator.py)"]
-    Design --> Review["💰 3. Review<br/>(cost_optimizer.py)"]
-    Review --> Deploy["🚨 4. Deploy<br/>(failure_analyzer.py)"]
-    Deploy --> Monitor["🔍 5. Monitor<br/>(drift_analyzer.py)"]
-    Monitor --> Dev
-```
-
-#### Scheduled Auditing & Auto-Remediation Flow
-
-The repository features an automated AI operations agent running in GitHub Actions:
-
-<details>
-<summary>📋 Click to expand Scheduled Auditing Sequence Diagram</summary>
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant CRON as GitHub Actions (Cron)
-    participant TG as Terragrunt/Terraform
-    participant OPA as OPA Policy Engine
-    participant script as aiops/drift_analyzer.py
-    participant LLM as Gemini API (LLM)
-    participant Git as GitHub (Issues / PRs)
-    
-    CRON->>TG: run terragrunt plan -out=tfplan.binary
-    TG->>TG: Compare live Azure state with Git config
-    TG-->>CRON: Export plan to JSON (tfplan.json)
-    CRON->>OPA: Validate JSON against infra_policies.rego
-    OPA-->>CRON: Collect compliance failures
-    CRON->>script: Feed tfplan.json & policy failures
-    script->>LLM: Send structured prompt (plan + policy info)
-    LLM-->>script: Return rich MD summary + HCL patches
-    alt Drift Detected & Violation Found
-        script->>Git: Open GitHub Issue / Alert (Revert instructions)
-    else Drift Detected & Code Adoption Requested
-        script->>Git: Create branch + commit HCL changes + open PR
-    end
-```
-
-</details>
-
-#### Pull Request (PR) Code Review & Security Gate Flow
-During standard developer pull requests, the automated CI/CD pipeline triggers test verification, cost analysis, and security reviews:
-
-<details>
-<summary>📋 Click to expand PR Verification & Review Sequence Diagram</summary>
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Dev as Developer
-    participant Git as GitHub (PR Pipeline)
-    participant TG as Terragrunt / Terraform
-    participant UT as Native Unit Tests (.tftest.hcl)
-    participant script as aiops/ scripts
-    participant LLM as Gemini API (LLM)
-    participant PR as Pull Request (Comments)
-
-    Dev->>Git: Open Pull Request / Push Commit
-    Git->>TG: run terragrunt plan
-    Git->>UT: run terraform test (Verify OPA mock compliance)
-    
-    alt Test Failure or Compliance Violation
-        UT-->>Git: Report build failure
-    else Build Passes
-        TG-->>Git: Export plan & cost JSONs
-        
-        par FinOps Cost Analysis
-            Git->>script: Feed infracost.json to cost_optimizer.py
-            script->>LLM: Send cost prompt
-            LLM-->>script: Return cost optimization review
-            script->>PR: Post FinOps review comment
-        and Security Threat Review
-            Git->>script: Feed tfplan.json to security_reviewer.py
-            script->>LLM: Send STRIDE security prompt
-            LLM-->>script: Return STRIDE security report
-            script->>PR: Post Security review comment
-        end
-    end
-
-    alt Deploy / Apply Stage Fails (Later in pipeline)
-        Git->>script: Feed failed logs to failure_analyzer.py
-        script->>LLM: Send error log prompt
-        LLM-->>script: Return diagnostic resolution blueprint
-        script->>PR: Post Diagnostic troubleshooting comment
-    end
-```
-
-</details>
-
 
 ## 📂 Project Structure
 
@@ -202,6 +107,114 @@ To make this project as reviewer-friendly as possible, I've created specialized 
 | **Storage** | LRS | GRS (Geo-Redundant) |
 | **Retention** | 30 Days | 90 Days (Audit Ready) |
 | **VM Sizing** | Burstable (B-series) | General Purpose (D/DS-series) |
+
+## 🤖 AI-Assisted Operations Suite (Experimental)
+
+The [`aiops/`](./aiops) directory is a set of real, working Python scripts (drift detection, FinOps cost review, security review, failure diagnostics, OPA policy generation, native-test generation, and a repo-aware chat copilot) that call the Gemini API. This is genuine, functioning integration code, not a stub — but it's worth being precise about how it runs today:
+
+- **By default, it runs in offline demo mode.** The `aiops-suite-demo.yml` workflow (triggered on PRs touching `aiops/**`) and every script's `--demo` flag replay pre-cached responses from `aiops/expected_reports/`, not live model output. This keeps the demo runnable and reviewable without requiring anyone to hold a Gemini API key.
+- **Live mode requires a `GEMINI_API_KEY` secret.** When present, `terragrunt.yml` and `aiops-live-audit.yml` call the real API against real plan/cost/log data.
+- **`aiops-live-audit.yml`'s scheduled drift audit is currently disabled** (its `cron` trigger is commented out) because this repo has no deployed Azure environment to audit against. It's wired for `workflow_dispatch` (manual trigger) and would activate on a schedule once pointed at real infrastructure.
+
+Traditional IaC is static — this is an exploration of a **closed-loop AI Operations Lifecycle** that assists across the development and operations cycle:
+
+```mermaid
+graph LR
+    Dev["💻 1. Development<br/>(test_generator.py)"] --> Design["🛡️ 2. Design<br/>(policy_generator.py)"]
+    Design --> Review["💰 3. Review<br/>(cost_optimizer.py)"]
+    Review --> Deploy["🚨 4. Deploy<br/>(failure_analyzer.py)"]
+    Deploy --> Monitor["🔍 5. Monitor<br/>(drift_analyzer.py)"]
+    Monitor --> Dev
+```
+
+#### Scheduled Auditing & Auto-Remediation Flow (designed, not yet running live)
+
+<details>
+<summary>📋 Click to expand Scheduled Auditing Sequence Diagram</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant CRON as GitHub Actions (Cron)
+    participant TG as Terragrunt/Terraform
+    participant OPA as OPA Policy Engine
+    participant script as aiops/drift_analyzer.py
+    participant LLM as Gemini API (LLM)
+    participant Git as GitHub (Issues / PRs)
+    
+    CRON->>TG: run terragrunt plan -out=tfplan.binary
+    TG->>TG: Compare live Azure state with Git config
+    TG-->>CRON: Export plan to JSON (tfplan.json)
+    CRON->>OPA: Validate JSON against infra_policies.rego
+    OPA-->>CRON: Collect compliance failures
+    CRON->>script: Feed tfplan.json & policy failures
+    script->>LLM: Send structured prompt (plan + policy info)
+    LLM-->>script: Return rich MD summary + HCL patches
+    alt Drift Detected & Violation Found
+        script->>Git: Open GitHub Issue / Alert (Revert instructions)
+    else Drift Detected & Code Adoption Requested
+        script->>Git: Create branch + commit HCL changes + open PR
+    end
+```
+
+</details>
+
+#### Pull Request (PR) Code Review & Security Gate Flow
+During standard developer pull requests, the CI/CD pipeline triggers test verification, cost analysis, and security reviews:
+
+<details>
+<summary>📋 Click to expand PR Verification & Review Sequence Diagram</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Dev as Developer
+    participant Git as GitHub (PR Pipeline)
+    participant TG as Terragrunt / Terraform
+    participant UT as Native Unit Tests (.tftest.hcl)
+    participant script as aiops/ scripts
+    participant LLM as Gemini API (LLM)
+    participant PR as Pull Request (Comments)
+
+    Dev->>Git: Open Pull Request / Push Commit
+    Git->>TG: run terragrunt plan
+    Git->>UT: run terraform test (Verify OPA mock compliance)
+    
+    alt Test Failure or Compliance Violation
+        UT-->>Git: Report build failure
+    else Build Passes
+        TG-->>Git: Export plan & cost JSONs
+        
+        par FinOps Cost Analysis
+            Git->>script: Feed infracost.json to cost_optimizer.py
+            script->>LLM: Send cost prompt
+            LLM-->>script: Return cost optimization review
+            script->>PR: Post FinOps review comment
+        and Security Threat Review
+            Git->>script: Feed tfplan.json to security_reviewer.py
+            script->>LLM: Send STRIDE security prompt
+            LLM-->>script: Return STRIDE security report
+            script->>PR: Post Security review comment
+        end
+    end
+
+    alt Deploy / Apply Stage Fails (Later in pipeline)
+        Git->>script: Feed failed logs to failure_analyzer.py
+        script->>LLM: Send error log prompt
+        LLM-->>script: Return diagnostic resolution blueprint
+        script->>PR: Post Diagnostic troubleshooting comment
+    end
+```
+
+</details>
+
+## 📝 Honest Notes
+
+This is a solo-maintained engineering-practice repository, not a project with external contributors or production traffic. In the interest of not overselling it:
+
+- **What's real and enforced today:** the 30-module architecture, native `terraform test` coverage on every module (including negative-path and apply-mode tests), `terraform fmt`/`tflint` gates, tfsec security scanning (blocking on HIGH/CRITICAL), and Infracost PR comments.
+- **What's real but conditional:** the OPA/Conftest policy gate and the AIOps live-audit workflow both run for real, but only once this repo has actual Azure credentials and a deployed environment behind it — right now they're wired correctly and skip honestly rather than faking a pass.
+- **What's exploratory:** the AI-assisted operations suite. The plumbing works and is a genuine integration with the Gemini API, but it runs in offline demo mode by default, as described above.
 
 ## 🛠️ Quick Start
 

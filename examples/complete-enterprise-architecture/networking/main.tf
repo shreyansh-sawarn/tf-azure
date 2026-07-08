@@ -7,7 +7,9 @@ module "vnet" {
   address_space       = var.address_space
   subnets             = var.subnets
 
-  # Allow HTTP traffic for the demo webpage
+  # Allow HTTP traffic for the demo webpage.
+  # tfsec:ignore:azure-network-no-public-ingress -- intentional: this example is a public-facing
+  # demo web tier that must accept inbound HTTP (80) from the internet. Not SSH/RDP/DB exposure.
   nsg_rules = {
     compute = [
       {

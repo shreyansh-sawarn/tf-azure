@@ -20,6 +20,28 @@ module "vnet" {
 }
 ```
 
+By default, no NSGs are created — this module does not ship a permissive network default. To attach per-subnet Network Security Groups, pass `nsg_rules` explicitly. Reference 3-tier (web/app/db) pattern, including an explicit deny-all baseline per subnet:
+
+```hcl
+  nsg_rules = {
+    web = [
+      { name = "AllowHTTPS", priority = 100, direction = "Inbound", access = "Allow", protocol = "Tcp", source_port_range = "*", destination_port_range = "443", source_address_prefix = "*", destination_address_prefix = "*" },
+      { name = "AllowHTTP", priority = 110, direction = "Inbound", access = "Allow", protocol = "Tcp", source_port_range = "*", destination_port_range = "80", source_address_prefix = "*", destination_address_prefix = "*" },
+      { name = "DenyAllInbound", priority = 4096, direction = "Inbound", access = "Deny", protocol = "*", source_port_range = "*", destination_port_range = "*", source_address_prefix = "*", destination_address_prefix = "*" },
+    ]
+    app = [
+      { name = "AllowFromWebSubnet", priority = 100, direction = "Inbound", access = "Allow", protocol = "Tcp", source_port_range = "*", destination_port_range = "8080", source_address_prefix = "10.0.1.0/24", destination_address_prefix = "*" },
+      { name = "DenyAllInbound", priority = 4096, direction = "Inbound", access = "Deny", protocol = "*", source_port_range = "*", destination_port_range = "*", source_address_prefix = "*", destination_address_prefix = "*" },
+    ]
+    db = [
+      { name = "AllowSQLFromAppSubnet", priority = 100, direction = "Inbound", access = "Allow", protocol = "Tcp", source_port_range = "*", destination_port_range = "1433", source_address_prefix = "10.0.2.0/24", destination_address_prefix = "*" },
+      { name = "DenyAllInbound", priority = 4096, direction = "Inbound", access = "Deny", protocol = "*", source_port_range = "*", destination_port_range = "*", source_address_prefix = "*", destination_address_prefix = "*" },
+    ]
+  }
+```
+
+Note the `web` tier above intentionally opens 80/443 to the internet — that's only appropriate for a genuinely public-facing tier. Scope `source_address_prefix` down for anything not meant to be internet-facing.
+
 ## Inputs
 
 | Name | Type | Default | Description |
@@ -29,7 +51,7 @@ module "vnet" {
 | `vnet_name` | `string` | — | Name of the Virtual Network |
 | `address_space` | `list(string)` | `["10.0.0.0/16"]` | CIDR blocks for the VNET |
 | `subnets` | `map(object)` | web/app/db/AzureFirewallSubnet | Subnet definitions |
-| `nsg_rules` | `map(list(object))` | Per-subnet security rules | NSG rules per subnet |
+| `nsg_rules` | `map(list(object))` | `{}` (no NSGs created) | NSG rules per subnet |
 | `tags` | `map(string)` | `{}` | Resource tags |
 
 ## Outputs

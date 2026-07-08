@@ -31,3 +31,24 @@ run "validate_storage_account_config" {
     error_message = "Public network access should be disabled"
   }
 }
+
+run "reject_invalid_account_tier" {
+  command = plan
+
+  variables {
+    name                          = "testsa"
+    resource_group_name           = "test-rg"
+    location                      = "eastus"
+    account_tier                  = "Ultra" # not a valid Azure storage account tier
+    replication_type              = "LRS"
+    public_network_access_enabled = false
+    tags = {
+      Environment = "test"
+      Project     = "portfolio"
+    }
+  }
+
+  expect_failures = [
+    var.account_tier,
+  ]
+}
